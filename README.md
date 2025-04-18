@@ -10,3 +10,8 @@ An example repo demonstrating how to build agentic LLM systems with BAML and plu
 
 - **Tool integration via PydanticAI MCP Client**  
   Leverages the [PydanticAI MCP Client](https://ai.pydantic.dev/mcp/client/) for seamless MCP tool calls.
+
+### Prerequisites
+
+- Install the [uv](https://docs.astral.sh/uv/getting-started/installation/) command line tool.
+- Basic level familiarity with [BAML](https://www.boundaryml.com/).
