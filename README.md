@@ -1,5 +1,7 @@
 # baml‑agents
 
+`pip install baml-agents`
+
 An example repo demonstrating how to build agentic LLM systems with BAML and plug‑and‑play MCP tools.
 
 - **Foundational architecture for AI Agents**  
