@@ -1,13 +1,13 @@
-class CalculatorArguments {
+class CalculatorToolArguments {
     expression string
 }
 
-class CalculatorUsage {
+class CalculatorToolCall {
     tool_name "calculate"
-    arguments CalculatorArguments
+    arguments CalculatorToolArguments
 }
 
-function UseCalculator(goal: string) -> CalculatorUsage {
+function UseCalculatorTool(goal: string) -> CalculatorToolCall {
     client Default
     prompt #"
         Use the calculator to solve: {{ goal }}
@@ -17,7 +17,7 @@ function UseCalculator(goal: string) -> CalculatorUsage {
 }
 
 test usage_example {
-    functions [UseCalculator]
+    functions [UseCalculatorTool]
     args {
         goal "Multiply all numbers between 10 and 15"
     }

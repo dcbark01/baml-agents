@@ -1,4 +1,4 @@
-.baml_client/
+baml_client/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

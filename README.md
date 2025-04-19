@@ -17,3 +17,4 @@ An example repo demonstrating how to build agentic LLM systems with BAML and plu
 
 - Install the [uv](https://docs.astral.sh/uv/getting-started/installation/) command line tool.
 - Basic level familiarity with [BAML](https://www.boundaryml.com/).
+- Generate `baml_client` folder with `uv run baml-cli generate` (or the `baml` VSCode extension).
