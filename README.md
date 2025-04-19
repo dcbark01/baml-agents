@@ -1,6 +1,6 @@
 # baml‑agents
 
-**Build schema‑aware AI agents in minutes**
+**12‑Factor AI Agents: BAML‑powered structured generation & plug‑and‑play MCP tools**
 
 ```bash
 pip install baml‑agents
