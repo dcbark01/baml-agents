@@ -56,10 +56,10 @@ A: MCP ([Machine Communication Protocol](https://github.com/humanlayer/mcp)) is 
 
 **Q: How do BAML, MCP, and `baml-agents` relate?**
 
-A:
-    *   **BAML** is used *within* `baml-agents` to define the agent's core logic and ensure structured interactions with the LLM.
-    *   **MCP** is used by `baml-agents` as the *interface* for calling external tools, promoting decoupling and reusability.
-    *   **`baml-agents`** is the library that *integrates* BAML for generation and MCP for tools, providing a cohesive framework built around the 12-Factor Agent principles.
+Answer:
+- **BAML** is used *within* `baml-agents` to define the agent's core logic and ensure structured interactions with the LLM.
+- **MCP** is used by `baml-agents` as the *interface* for calling external tools, promoting decoupling and reusability.
+- **`baml-agents`** is the library that *integrates* BAML for generation and MCP for tools, providing a cohesive framework built around the 12-Factor Agent principles.
 
 **Q: Why is `uv` required for running the notebooks? Can I just use `pip`?**
 
