@@ -12,12 +12,21 @@ pip install baml‑agents
 - **Structured generation** – BAML enforces structured outputs.
 - **Zero‑friction tools** – `pydantic‑ai‑slim[mcp]` lets you use BAML to let LLMs call local (Python) or remote (MCP) tools with a single unified interface.
 
-## Quick start
+## Getting Started
 
 ```bash
-# prerequisites
-uv pip install baml‑agents
-uv run baml-cli generate   # scaffolds the baml_client folder
+pip install baml-agents
+```
+
+Check `notebooks` folder for examples.
+
+## Running example notebooks
+
+Prerequisites:
+
+```bash
+uv sync --dev
+uv run baml-cli generate
 ```
 
 ## Requirements
