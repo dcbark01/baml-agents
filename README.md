@@ -24,7 +24,7 @@ Explore the `notebooks/` folder for practical examples.
 - Run `uv run baml-cli generate` (Generates necessary BAML code)
 
 ## Design Decisions
-**Why wrap tools in the MCP format?**
+**Why wrap tools in the MCP-compatible format?**
 
 Even if your tools are purely internal, wrapping them in MCP offers significant design advantages:
 
