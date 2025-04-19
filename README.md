@@ -35,12 +35,9 @@ Even if your tools are purely internal, wrapping them in MCP offers significant 
 
 Explore the `notebooks/` folder for practical examples.
 
-## Running example notebooks
+#### Prerequisites to running notebooks
 
-Prerequisites:
-- Python 3.10 or later
-- [uv](https://docs.astral.sh/uv/) CLI
-```bash
-uv sync --dev
-uv run baml-cli generate
-```
+- Have Python 3.10 or later
+- Install [uv](https://docs.astral.sh/uv/) CLI
+- Run `uv sync --dev`
+- Run `uv run baml-cli generate`
