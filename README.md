@@ -17,7 +17,7 @@ pip install baml‑agents
 Even if your tools are purely internal, wrapping them in MCP offers significant design advantages:
 
 - **Transport‑agnostic integration**  
-  MCP typically uses HTTP/SSE or STDIO for separate‑process communication, but we can also support direct in‑process Python function calls—providing a zero‑overhead, low‑latency integration without the need for external servers.
+  MCP typically uses _http/sse_ or _stdio_ for separate‑process communication, but we can also support direct in‑process Python function calls—providing a zero‑overhead, low‑latency integration without the need for external servers.
 
 - **Hot‑swappable deployments**  
   Seamlessly switch between in‑process (inner) and remote (outer) tool implementations without modifying prompts or model code.
