@@ -1,6 +1,6 @@
 # baml‑agents
 
-**12‑Factor AI Agents: BAML‑powered structured generation & plug‑and‑play MCP tools**
+**12‑Factor AI Agents: BAML‑powered structured generation with plug‑and‑play MCP tools**
 
 ```bash
 pip install baml‑agents
