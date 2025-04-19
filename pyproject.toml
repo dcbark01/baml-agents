@@ -1,6 +1,6 @@
 [project]
 name = "baml-agents"
-version = "0.3.0"
+version = "0.3.1"
 description = "Example of building agentic LLM systems using BAML for structured generation and MCP Client for tool integration"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -12,3 +12,10 @@ dev = [
     "jupyter-black>=0.4.0",
     "mcp-server-calculator>=0.1.1",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+packages = ["baml_agents"]
