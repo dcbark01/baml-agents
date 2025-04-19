@@ -10,9 +10,7 @@ pip install baml‑agents
 
 - **Robust architecture** – follows the [12‑Factor Agents](https://github.com/humanlayer/12-factor-agents) and the [12-Factor Tools](https://github.com/humanlayer/12-factor-agents/issues?q=author%3Aelijas%20%2312factortools%20sort%3Acreated-asc) principles.
 - **Structured generation** – BAML enforces structured outputs.
-- **Zero‑friction tools** – `pydantic‑ai‑slim[mcp]` enables LLMs to call local (Python) or remote (MCP) tools through a unified interface.
-
-
+- **Zero‑friction tools** – Use LLMs to call local (Python) or remote (MCP) tools through a unified interface.
 
 ## Getting Started
 
@@ -52,7 +50,7 @@ A: BAML ([Boundary Markup Language](https://github.com/BoundaryML/baml)) is a do
 
 **Q: What is MCP?**
 
-A: MCP ([Machine Communication Protocol](https://github.com/humanlayer/mcp)) is a specification for standardizing how AI agents or LLMs interact with external tools (also known as functions or capabilities). It defines a common interface, typically using simple text-based protocols like HTTP/SSE or stdio, allowing tools to be developed, deployed, and consumed independently of the specific agent or LLM framework. `baml-agents` uses MCP (via `pydantic-ai-slim[mcp]`) to provide a flexible and standardized way to integrate tools.
+A: MCP ([Machine Communication Protocol](https://github.com/humanlayer/mcp)) is a specification for standardizing how AI agents or LLMs interact with external tools (also known as functions or capabilities). It defines a common interface, typically using simple text-based protocols like HTTP/SSE or stdio, allowing tools to be developed, deployed, and consumed independently of the specific agent or LLM framework. `baml-agents` uses MCP to provide a flexible and standardized way to integrate tools.
 
 **Q: How do BAML, MCP, and `baml-agents` relate?**
 
