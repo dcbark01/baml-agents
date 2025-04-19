@@ -37,7 +37,7 @@ Explore the `notebooks/` folder for practical examples.
 
 #### Prerequisites to running notebooks
 
-- Have Python 3.10 or later
+- Have Python 3.10 or later
 - Install [uv](https://docs.astral.sh/uv/) CLI
-- Run `uv sync --dev`
-- Run `uv run baml-cli generate`
+- Run `uv sync --dev`  # Installs all dependencies (including dev tools)
+- Run `uv run baml-cli generate` # Generates necessary BAML code
