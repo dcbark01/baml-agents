@@ -38,13 +38,9 @@ Explore the `notebooks/` folder for practical examples.
 ## Running example notebooks
 
 Prerequisites:
-
+- Python 3.10 or later
+- [uv](https://docs.astral.sh/uv/) CLI
 ```bash
 uv sync --dev
 uv run baml-cli generate
 ```
-
-## Requirements
-
-- Python 3.10+
-- [uv](https://docs.astral.sh/uv/) CLI
