@@ -14,10 +14,6 @@ pip install baml‑agents
 
 ## Getting Started
 
-```bash
-pip install baml-agents
-```
-
 Check `notebooks` folder for examples.
 
 ## Running example notebooks
