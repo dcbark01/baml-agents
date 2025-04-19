@@ -120,7 +120,7 @@ class McpServers(MCPServer):
         *,
         tools: Iterable[ToolDefinition] | None = None,
         prompt_cfg: BamlToolPromptConfig | None = None,
-    ) -> Tuple[T, ToolRunner]:
+    ) -> Tuple[T, ToolRunner, str]:
         prompt_cfg = prompt_cfg or BamlToolPromptConfig()
         schema_converter = JsonSchemaToBamlConverter()
         tool_converter = ToolToBamlType(schema_converter=schema_converter)
@@ -131,7 +131,7 @@ class McpServers(MCPServer):
             builder, output_class, tools=tools or await self.list_tools()
         )
         invoker = ToolRunner(server=self, prompt_cfg=prompt_cfg)
-        return tb, invoker
+        return tb, invoker, prompt_cfg.output_format_prefix()
 
     @asynccontextmanager
     async def client_streams(

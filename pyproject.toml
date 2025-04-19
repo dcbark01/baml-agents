@@ -1,6 +1,6 @@
 [project]
 name = "baml-agents"
-version = "0.1.0"
+version = "0.3.0"
 description = "Example of building agentic LLM systems using BAML for structured generation and MCP Client for tool integration"
 readme = "README.md"
 requires-python = ">=3.10"
