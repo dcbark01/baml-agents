@@ -1,20 +1,26 @@
 # baml‑agents
 
-`pip install baml-agents`
+**Build schema‑aware AI agents in minutes**
 
-An example repo demonstrating how to build agentic LLM systems with BAML and plug‑and‑play MCP tools.
+```bash
+pip install baml‑agents
+```
 
-- **Foundational architecture for AI Agents**  
-  Follows the [12 Factor Agents](https://github.com/humanlayer/12-factor-agents) principles for building reliable LLM applications.
+## What you get
 
-- **Structured generation with BAML**  
-  Uses the [BAML](https://www.boundaryml.com/) DSL to produce schema‑aware, structured outputs.
+- **Robust architecture** – follows the [12‑Factor Agents](https://github.com/humanlayer/12-factor-agents) principles.
+- **Structured generation** – BAML enforces structured outputs.
+- **Zero‑friction tools** – `pydantic‑ai‑slim[mcp]` lets you use BAML to let LLMs call local (Python) or remote (MCP) tools with a single unified interface.
 
-- **Tool integration via PydanticAI MCP Client**  
-  Leverages the [PydanticAI MCP Client](https://ai.pydantic.dev/mcp/client/) for seamless MCP tool calls.
+## Quick start
 
-### Prerequisites
+```bash
+# prerequisites
+uv pip install baml‑agents
+uv run baml-cli generate   # scaffolds the baml_client folder
+```
 
-- Install the [uv](https://docs.astral.sh/uv/getting-started/installation/) command line tool.
-- Basic level familiarity with [BAML](https://www.boundaryml.com/).
-- Generate `baml_client` folder with `uv run baml-cli generate` (or the `baml` VSCode extension).
+## Requirements
+
+- Python 3.10+
+- [uv](https://docs.astral.sh/uv/) CLI
