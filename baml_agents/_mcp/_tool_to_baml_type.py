@@ -38,7 +38,9 @@ class ToolToBamlType(AbstractToolToBamlType):
         props = merge_dicts_no_overlap(
             {
                 baml_tool_id_field: {
+                    "title": tool.name,
                     "type": tb.literal_string(tool.name),
+                    "description": tool.description,
                 }
             },
             schema.get("properties", {}),
