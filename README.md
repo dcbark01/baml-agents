@@ -10,7 +10,7 @@ pip install baml‑agents
 
 - **Robust architecture** – follows the [12‑Factor Agents](https://github.com/humanlayer/12-factor-agents) principles.
 - **Structured generation** – BAML enforces structured outputs.
-- **Zero‑friction tools** –   pydantic‑ai‑slim[mcp]   enables LLMs to call local (Python) or remote (MCP) tools through a unified interface.
+- **Zero‑friction tools** – `pydantic‑ai‑slim[mcp]` enables LLMs to call local (Python) or remote (MCP) tools through a unified interface.
 
 ## Why wrap tools in the MCP format?
 
