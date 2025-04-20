@@ -31,5 +31,5 @@ uv run baml-cli generate
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.12+
 - [uv](https://docs.astral.sh/uv/) CLI
