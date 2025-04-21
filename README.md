@@ -71,4 +71,4 @@ A: The BAML CLI (`baml-cli`) reads your `.baml` files (which define your LLM fun
 
 **Q: What are the "12-Factor Agent" principles?**
 
-A: They are a set of best practices adapted from the [original 12-Factor App methodology](https://12factor.net/), tailored for building robust, scalable, and maintainable AI agents. Key ideas include managing configuration via the environment, treating backing services (like LLMs or Vector DBs) as attached resources, explicit dependency declaration, stateless processes, and standardized logs. You can read the full specification [here](https://github.com/humanlayer/12-factor-agents).
+A: They are a [set of best practices](https://github.com/humanlayer/12-factor-agents) adapted from the [original 12-Factor App methodology](https://12factor.net/), tailored for building robust, scalable, and maintainable AI agents. Key ideas include managing configuration via the environment, treating backing services (like LLMs or Vector DBs) as attached resources, explicit dependency declaration, stateless processes, and standardized logs. You can read the full specification [here](https://github.com/humanlayer/12-factor-agents).
