@@ -1,5 +1,8 @@
 # baml‑agents
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 **12‑Factor AI Agents: BAML‑powered structured generation with plug‑and‑play MCP tools**
 
 ```bash
