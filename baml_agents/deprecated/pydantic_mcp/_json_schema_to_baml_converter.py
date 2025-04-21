@@ -1,6 +1,6 @@
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 from baml_py.baml_py import FieldType
 from baml_py.type_builder import TypeBuilder
@@ -9,7 +9,6 @@ from baml_py.type_builder import TypeBuilder
 class _RefPlaceholder:
     """Private sentinel for circular $ref resolution."""
 
-    pass
 
 
 class AbstractJsonSchemaToBamlConverter(ABC):
@@ -18,40 +17,37 @@ class AbstractJsonSchemaToBamlConverter(ABC):
     @abstractmethod
     def convert(
         self,
-        schema: Dict[str, Any],
+        schema: dict[str, Any],
         tb: TypeBuilder,
         **_,
     ) -> FieldType:
         """Parse the entire root schema into a FieldType."""
-        pass
 
 
 class JsonSchemaToBamlConverter(AbstractJsonSchemaToBamlConverter):
     """Parse JSON Schema into BAML field types."""
 
     def __init__(self, *, fail_on_unknown: bool = False):
-        """
-        :param fail_on_unknown: If True, raise on unknown or ambiguous schema shapes.
+        """:param fail_on_unknown: If True, raise on unknown or ambiguous schema shapes.
         """
         self._fail_on_unknown = fail_on_unknown
 
     def convert(
         self,
-        schema: Dict[str, Any],
+        schema: dict[str, Any],
         tb: TypeBuilder,
     ) -> FieldType:
+        """Public entry: parses the entire root schema into a FieldType.
         """
-        Public entry: parses the entire root schema into a FieldType.
-        """
-        cache: Dict[str, FieldType | _RefPlaceholder] = {}
+        cache: dict[str, FieldType | _RefPlaceholder] = {}
         return self._parse(schema, tb, cache, schema)
 
     def _parse(
         self,
-        schema: Dict[str, Any],
+        schema: dict[str, Any],
         tb: TypeBuilder,
-        cache: Dict[str, FieldType | _RefPlaceholder],
-        root_schema: Dict[str, Any],
+        cache: dict[str, FieldType | _RefPlaceholder],
+        root_schema: dict[str, Any],
     ) -> FieldType:
         if "$ref" not in schema and "anyOf" not in schema and "type" not in schema:
             msg = (
@@ -69,7 +65,7 @@ class JsonSchemaToBamlConverter(AbstractJsonSchemaToBamlConverter):
 
         if any_of := schema.get("anyOf"):
             return tb.union(
-                [self._parse(sub, tb, cache, root_schema) for sub in any_of]
+                [self._parse(sub, tb, cache, root_schema) for sub in any_of],
             )
 
         t = schema.get("type")
@@ -106,10 +102,10 @@ class JsonSchemaToBamlConverter(AbstractJsonSchemaToBamlConverter):
 
     def _object(
         self,
-        schema: Dict[str, Any],
+        schema: dict[str, Any],
         tb: TypeBuilder,
-        cache: Dict[str, FieldType | _RefPlaceholder],
-        root_schema: Dict[str, Any],
+        cache: dict[str, FieldType | _RefPlaceholder],
+        root_schema: dict[str, Any],
     ) -> FieldType:
         # Warn if additionalProperties is present, since we ignore it
         if "additionalProperties" in schema:
@@ -132,7 +128,7 @@ class JsonSchemaToBamlConverter(AbstractJsonSchemaToBamlConverter):
 
     def _string(
         self,
-        schema: Dict[str, Any],
+        schema: dict[str, Any],
         tb: TypeBuilder,
     ) -> FieldType:
         if enum := schema.get("enum"):
@@ -148,14 +144,14 @@ class JsonSchemaToBamlConverter(AbstractJsonSchemaToBamlConverter):
         self,
         ref: str,
         tb: TypeBuilder,
-        cache: Dict[str, FieldType | _RefPlaceholder],
-        root_schema: Dict[str, Any],
+        cache: dict[str, FieldType | _RefPlaceholder],
+        root_schema: dict[str, Any],
     ) -> FieldType:
         if not ref.startswith("#/"):
             raise ValueError(
                 f"External refs are not supported: {ref!r}. "
                 "Only local JSON Pointer refs (starting with '#/') are supported. "
-                "Did you mean to inline this definition or ensure all refs are local?"
+                "Did you mean to inline this definition or ensure all refs are local?",
             )
         if ref in cache:
             val = cache[ref]

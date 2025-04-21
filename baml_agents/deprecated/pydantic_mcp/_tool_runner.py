@@ -4,9 +4,15 @@ from abc import ABC, abstractmethod
 
 from mcp.types import CallToolResult
 from pydantic import BaseModel
-from pydantic_ai.mcp import MCPServer
 
-from baml_agents._mcp._baml_tool_prompt_config import BamlToolPromptConfig
+from baml_agents.pydantic_mcp._import import pydantic_import_err_msg
+
+try:
+    from pydantic_ai.mcp import MCPServer  # type: ignore
+except ImportError as e:
+    raise ImportError(pydantic_import_err_msg) from e
+
+from baml_agents.pydantic_mcp._baml_tool_prompt_config import BamlToolPromptConfig
 
 
 class AbstractToolInvoker(ABC):
@@ -26,13 +32,13 @@ class ToolRunner(AbstractToolInvoker):
     async def run(self, result: BaseModel) -> list[CallToolResult]:
         """Run the tool calls from the result."""
         tool_calls: list[dict] | None = getattr(
-            result, self._prompt_cfg.tools_field, None
+            result, self._prompt_cfg.tools_field, None,
         )
         if isinstance(result, dict) and self._prompt_cfg.id_field in result:
             tool_calls = [result]
         if tool_calls is None:
             raise ValueError(
-                "Could not find tool calls in the result. Currently only root level tool calls are supported."
+                "Could not find tool calls in the result. Currently only root level tool calls are supported.",
             )
 
         if self._should_warn_multiple_tools(tool_calls):
@@ -63,5 +69,5 @@ class ToolRunner(AbstractToolInvoker):
                     {k: v for k, v in call.items() if k != self._prompt_cfg.id_field},
                 )
                 for call in tool_calls
-            ]
+            ],
         )

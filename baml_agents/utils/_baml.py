@@ -1,4 +1,4 @@
-from baml_agents._utils._python import sole
+from baml_agents.utils._python import sole
 
 
 def view_prompt(request):
@@ -8,7 +8,7 @@ def view_prompt(request):
         content = sole(message["content"])
         if content["type"] != "text":
             raise ValueError(
-                f"Expected content type 'text', but got '{content['type']}'"
+                f"Expected content type 'text', but got '{content['type']}'",
             )
         prompt_parts.append(f"[{message['role']}]\n{content['text']}")
     return "\n\n".join(prompt_parts)

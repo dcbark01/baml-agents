@@ -2,29 +2,35 @@ from __future__ import annotations
 
 from contextlib import AsyncExitStack, asynccontextmanager
 from typing import (
+    TYPE_CHECKING,
     Any,
-    AsyncIterator,
-    Callable,
-    Dict,
-    Iterable,
-    List,
     Self,
-    Sequence,
-    Tuple,
     TypeVar,
 )
 
-from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 from baml_py.type_builder import TypeBuilder
 from mcp.types import CallToolResult, JSONRPCMessage, TextContent
-from pydantic_ai.mcp import MCPServer
-from pydantic_ai.tools import ToolDefinition
 
-from baml_agents._mcp._baml_tool_prompt_config import BamlToolPromptConfig
-from baml_agents._mcp._json_schema_to_baml_converter import JsonSchemaToBamlConverter
-from baml_agents._mcp._tool_runner import ToolRunner
-from baml_agents._mcp._tool_to_baml_type import ToolToBamlType
-from baml_agents._mcp._type_builder_orchestrator import TypeBuilderOrchestrator
+from baml_agents.pydantic_mcp._import import pydantic_import_err_msg
+
+try:
+    from pydantic_ai.mcp import MCPServer  # type: ignore
+    from pydantic_ai.tools import ToolDefinition  # type: ignore
+except ImportError as e:
+    raise ImportError(pydantic_import_err_msg) from e
+
+from baml_agents.pydantic_mcp._baml_tool_prompt_config import BamlToolPromptConfig
+from baml_agents.pydantic_mcp._json_schema_to_baml_converter import (
+    JsonSchemaToBamlConverter,
+)
+from baml_agents.pydantic_mcp._tool_runner import ToolRunner
+from baml_agents.pydantic_mcp._tool_to_baml_type import ToolToBamlType
+from baml_agents.pydantic_mcp._type_builder_orchestrator import TypeBuilderOrchestrator
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator, Callable, Iterable, Sequence
+
+    from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
 T = TypeVar("T", bound=TypeBuilder)
 
@@ -37,11 +43,11 @@ class McpServers(MCPServer):
     """Aggregates multiple MCP Server instances into a unified service."""
 
     __slots__ = (
-        "_servers",
-        "_server_map",
-        "_tools",
         "_exit_stack",
         "_exit_stack_factory",
+        "_server_map",
+        "_servers",
+        "_tools",
     )
 
     def __init__(
@@ -51,8 +57,8 @@ class McpServers(MCPServer):
         exit_stack_factory: Callable[[], AsyncExitStack] | None = None,
     ) -> None:
         self._servers = list(servers)
-        self._server_map: Dict[str, MCPServer] = {}
-        self._tools: List[ToolDefinition] = []
+        self._server_map: dict[str, MCPServer] = {}
+        self._tools: list[ToolDefinition] = []
         self._exit_stack: AsyncExitStack | None = None
         self._exit_stack_factory = exit_stack_factory
 
@@ -68,7 +74,10 @@ class McpServers(MCPServer):
         return self
 
     async def __aexit__(
-        self, exc_type: type | None, exc_val: BaseException | None, exc_tb: Any
+        self,
+        exc_type: type | None,
+        exc_val: BaseException | None,
+        exc_tb: Any,
     ) -> None:
         """Exit all servers and clear cache."""
         if self._exit_stack is not None:
@@ -92,22 +101,22 @@ class McpServers(MCPServer):
                     prev_server = self._server_map[tool.name]
                     raise DuplicateToolNameError(
                         f"Duplicate tool: {tool.name!r} found in both servers: "
-                        f"{repr(prev_server)} and {repr(server)}"
+                        f"{prev_server!r} and {server!r}",
                     )
                 self._server_map[tool.name] = server
                 self._tools.append(tool)
 
-    async def list_tools(self) -> List[ToolDefinition]:
+    async def list_tools(self) -> list[ToolDefinition]:
         """List of available ToolDefinition objects."""
         return list(self._tools)
 
-    async def call_tool(self, name: str, arguments: Dict[str, Any]) -> CallToolResult:
+    async def call_tool(self, name: str, arguments: dict[str, Any]) -> CallToolResult:
         """Invoke the named tool with provided arguments."""
         server = self._server_map.get(name)
         if not server:
             return CallToolResult(
                 content=[
-                    TextContent(type="text", text=f"Error: Tool '{name}' not found.")
+                    TextContent(type="text", text=f"Error: Tool '{name}' not found."),
                 ],
                 isError=True,
             )
@@ -120,15 +129,18 @@ class McpServers(MCPServer):
         *,
         tools: Iterable[ToolDefinition] | None = None,
         prompt_cfg: BamlToolPromptConfig | None = None,
-    ) -> Tuple[T, ToolRunner, str]:
+    ) -> tuple[T, ToolRunner, str]:
         prompt_cfg = prompt_cfg or BamlToolPromptConfig()
         schema_converter = JsonSchemaToBamlConverter()
         tool_converter = ToolToBamlType(schema_converter=schema_converter)
         tbo = TypeBuilderOrchestrator(
-            tool_converter=tool_converter, prompt_cfg=prompt_cfg
+            tool_converter=tool_converter,
+            prompt_cfg=prompt_cfg,
         )
         tb = await tbo.build_types(
-            builder, output_class, tools=tools or await self.list_tools()
+            builder,
+            output_class,
+            tools=tools or await self.list_tools(),
         )
         invoker = ToolRunner(server=self, prompt_cfg=prompt_cfg)
         return tb, invoker, prompt_cfg.output_format_prefix()

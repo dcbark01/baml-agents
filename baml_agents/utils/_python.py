@@ -1,9 +1,10 @@
-from typing import Any, Dict, Iterable, TypeVar
+from collections.abc import Iterable
+from typing import Any, TypeVar
 
 T = TypeVar("T")
 
 
-def merge_dicts_no_overlap(a: Dict[Any, Any], b: Dict[Any, Any]) -> Dict[Any, Any]:
+def merge_dicts_no_overlap(a: dict[Any, Any], b: dict[Any, Any]) -> dict[Any, Any]:
     """Merge two dicts, error on key collisions."""
     overlap = set(a) & set(b)
     if overlap:

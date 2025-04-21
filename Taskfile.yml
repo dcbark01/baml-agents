@@ -1,0 +1,43 @@
+version: '3'
+
+tasks:
+  ##############################
+  ### TESTS
+  ##############################
+  test:
+    cmds:
+      - uv run pytest {{.CLI_ARGS}}
+    desc: Run pytest
+    aliases: [t]
+  test:watch:
+    cmds:
+      # ptw crashes without this fix, ] must be indented
+      - sed -i '' 's/^]$/    ]/' pyproject.toml
+      - uv run ptw -- {{.CLI_ARGS}}
+    desc: Run pytest-watch
+    aliases: [tw]
+  test:coverage:
+    cmds:
+      - uv run pytest {{.CLI_ARGS}} --cov --cov-report=lcov:lcov.info --cov-report=term:skip-covered
+    desc: Run pytest with coverage reporting
+    aliases: [tc]
+  test:watch-coverage:
+    cmds:
+      # ptw crashes without this fix, ] must be indented
+      - sed -i '' 's/^]$/    ]/' pyproject.toml
+      - uv run ptw -- {{.CLI_ARGS}} --cov --cov-report=lcov:lcov.info --cov-report=term:skip-covered
+    desc: Run pytest-watch with coverage reporting
+    aliases: [twc, tcw]
+  ##############################
+  ### LINT
+  ##############################
+  lint:
+    cmds:
+      - uv run ruff check --fix
+    desc: Run Ruff linter in watch mode with auto-fix
+    aliases: [l]
+  lint-watch:
+    cmds:
+      - uv run ruff check --fix --watch
+    desc: Run Ruff linter in watch mode with auto-fix
+    aliases: [lw]
