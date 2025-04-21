@@ -8,7 +8,7 @@ class BamlBaseType(Enum):
     """Core BAML primitive or structural types."""
 
     BOOL = "bool"
-    STR = "str"
+    STR = "string"
     INT = "int"
     FLOAT = "float"
     LIST = "list"  # Represents the concept of a list, actual type info combined
@@ -40,7 +40,9 @@ class BamlTypeInfo:
     # Optionality - derived from schema context (required list or explicit null type)
     is_optional: bool = False
     # For literal types, the value itself
-    literal_value: Any | None = None
+    literal_string: str | None = None
+    literal_bool: bool | None = None
+    literal_int: int | None = None
 
     def __post_init__(self):
         # Basic validation / canonical representation
@@ -76,6 +78,12 @@ class BamlTypeInfo:
             base = "|".join(t.get_effective_type_str() for t in self.union_types)
         elif self.base_type == BamlBaseType.ANY:
             base = "any"  # Map BamlBaseType.ANY to 'any' string
+        elif self.base_type == BamlBaseType.LITERAL_INT:
+            base = str(self.literal_int)
+        elif self.base_type == BamlBaseType.LITERAL_BOOL:
+            base = "true" if self.literal_bool else "false"
+        elif self.base_type == BamlBaseType.LITERAL_STRING:
+            base = f'"{self.literal_string}"'
         else:
             base = self.base_type.value
 

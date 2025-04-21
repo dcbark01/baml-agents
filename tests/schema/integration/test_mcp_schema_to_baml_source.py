@@ -56,10 +56,9 @@ def test_mcp_schema_to_baml_source(
         for warning_type, match_regex in expected_warnings or []:
             stack.enter_context(pytest.warns(warning_type, match=match_regex))
 
-        from_mcp = McpSchemaToBamlModelConverter(schema)
-        baml_models = from_mcp.convert_tools()
-        to_baml_source = BamlModelToBamlSourceConverter(baml_models)
-        actual = to_baml_source.generate()
+        baml_models = McpSchemaToBamlModelConverter(schema).convert_tools()
+        baml_source = BamlModelToBamlSourceConverter(baml_models).generate()
+        actual = baml_source
 
     # deterministic comparison by sorting on the model name
     assert actual == expected

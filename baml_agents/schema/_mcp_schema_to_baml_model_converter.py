@@ -48,19 +48,10 @@ class McpSchemaToBamlModelConverter(AbstractMcpSchemaToBamlModelConverter):
             raise ValueError("The root schema must contain a 'tools' key.")
         tools: list[dict] = self._root_schema["tools"]
 
-        def _check_duplicate_names(
-            models: list[BamlClassModel | BamlEnumModel],
-        ) -> None:
-            names = [model.name for model in models]
-            duplicates = {name for name in names if names.count(name) > 1}
-            if duplicates:
-                raise ValueError(f"Duplicate BAML model names detected: {duplicates}")
-
         models = []
         for tool in tools:
             converted = self._convert_tool(tool)
             models.extend(converted)
-            _check_duplicate_names(models)
         return models
 
     def _convert_tool(self, tool: dict) -> list[BamlClassModel | BamlEnumModel]:

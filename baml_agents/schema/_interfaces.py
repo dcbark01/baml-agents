@@ -44,6 +44,14 @@ class AbstractJsonSchemaToBamlModelConverter(ABC, BaseSchemaConverter):
 
 class BamlModelConverter:
     def __init__(self, baml_models: list[BamlClassModel | BamlEnumModel]):
+        # Check for duplicate model names
+        names = [model.name for model in baml_models]
+        duplicates = {name for name in names if names.count(name) > 1}
+        if duplicates:
+            raise ValueError(
+                f"Duplicate model names found: {', '.join(sorted(duplicates))}"
+            )
+
         self._baml_models = baml_models
 
 
@@ -63,12 +71,11 @@ class BamlTypeBuilderConfigurer(ABC, Generic[T], BamlModelConverter):
     """Abstract base for configuring BAML TypeBuilder objects by adding types/classes."""
 
     @abstractmethod
-    def configure(self, tb: T) -> T:
+    def configure(self, tb: T):
         """
         Add types/classes into the provided TypeBuilder.
 
         :param tb: An instance of TypeBuilder to be configured.
-        :return: The same TypeBuilder instance (return is for convenience; the object is mutated in place).
         """
 
 

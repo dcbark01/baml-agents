@@ -478,7 +478,7 @@ class JsonSchemaToBamlModelConverter(AbstractJsonSchemaToBamlModelConverter):
             # Special case for BAML literal strings
             return BamlTypeInfo(
                 base_type=BamlBaseType.LITERAL_STRING,
-                literal_value=schema["baml_literal_string"],
+                literal_string=schema["baml_literal_string"],
             )
 
         # Handle missing type or unknown/unsupported types
