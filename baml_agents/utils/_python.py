@@ -17,3 +17,8 @@ def sole(items: Iterable[T]) -> T:
     if len(lst) != 1:
         raise ValueError(f"Expected single element, got {len(lst)}")
     return lst[0]
+
+
+def snake_to_pascal(name: str) -> str:
+    """Convert snake_case or kebab-case to PascalCase."""
+    return "".join(word.capitalize() for word in name.replace("-", "_").split("_"))

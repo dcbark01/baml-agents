@@ -24,9 +24,9 @@ test example {
 }
 
 class SearchPapersArguments {
-  query string
+  query string 
   categories string?
-  date_from string?
+  date_from string? 
   date_to string?
   max_results int?
 }
@@ -36,7 +36,7 @@ class SearchPapersTool {
   arguments SearchPapersArguments
 }
 
-function GetSearchStoriesTool(goal: string) -> SearchStoriesTool {
+function GetSearchStoriesTool(goal: string) -> SearchPapersTool {
     client Default
     prompt #"
         Goal: {{ goal }}

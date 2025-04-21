@@ -1,10 +1,22 @@
-import json
 import re
 import warnings
+from collections.abc import Mapping
 from contextlib import suppress
 from typing import Any, NamedTuple
 
-from baml_agents.schema._interfaces import AbstractJsonSchemaToBamlModelConverter
+from pydantic import BaseModel, ConfigDict, Field
+
+from baml_agents.schema._default_callbacks import (
+    DefaultAlias,
+    DefaultDesc,
+    DefaultPropName,
+)
+from baml_agents.schema._interfaces import (
+    AbstractJsonSchemaToBamlModelConverter,
+    AliasCallback,
+    DescCallback,
+    PropNameCallback,
+)
 from baml_agents.schema._model import (
     BamlBaseType,
     BamlClassModel,
@@ -20,63 +32,23 @@ class SchemaTypeAndUnions(NamedTuple):
     union_options: list[BamlTypeInfo] | None
 
 
-class JsonSchemaToBamlModelError(Exception):
-    """Base exception for errors in JsonSchemaToBamlModelConverter."""
+class JsonSchemaToBamlModelConverterConfig(BaseModel):
+    prop_name: PropNameCallback = Field(default_factory=DefaultPropName)
+    desc: DescCallback = Field(default_factory=DefaultDesc)
+    alias: AliasCallback = Field(default_factory=DefaultAlias)
 
-
-class PathNavigationError(JsonSchemaToBamlModelError):
-    """Raised when navigation through a JSON pointer path fails due to an unexpected node type."""
-
-
-class InvalidRefError(JsonSchemaToBamlModelError):
-    """Raised when a $ref is invalid."""
-
-
-class CircularRefError(JsonSchemaToBamlModelError):
-    """Raised when a circular $ref is detected."""
-
-
-class NameCollisionError(JsonSchemaToBamlModelError):
-    """Raised when a name collision occurs in model definitions."""
-
-
-class UnexpectedTypeError(JsonSchemaToBamlModelError):
-    """Raised when an unexpected type is encountered in definitions."""
-
-
-class RefResolutionError(JsonSchemaToBamlModelError):
-    """Raised when a $ref cannot be resolved."""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class JsonSchemaToBamlModelConverter(AbstractJsonSchemaToBamlModelConverter):
-    """
-    Converts a single JSON schema into a list of BAML model dataclasses
-    (BamlClassModel, BamlEnumModel) by recursively parsing the schema structure.
-    """
-
-    def __init__(self, schema: str | dict[str, Any]):
-        """
-        Initializes the converter with a JSON schema.
-
-        Args:
-            schema: The JSON schema as a string or a dictionary.
-
-        Raises:
-            ValueError: If the input schema is invalid JSON (when passed as string).
-            TypeError: If the input schema is not a string or dictionary.
-
-        """
-        if isinstance(schema, str):
-            try:
-                self._root_schema: dict[str, Any] = json.loads(schema)
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Invalid JSON schema provided: {e}") from e
-        elif isinstance(schema, dict):
-            self._root_schema = schema
-        else:
-            raise TypeError(
-                f"Schema must be a JSON string or a dictionary, got {type(schema)}",
-            )
+    def __init__(
+        self,
+        schema: str | Mapping[str, Any],
+        class_name: str,
+        *,
+        config: JsonSchemaToBamlModelConverterConfig | None = None,
+    ):
+        super().__init__(schema, class_name)
 
         # Internal state for tracking definitions and naming
         self._definitions: dict[
@@ -84,8 +56,9 @@ class JsonSchemaToBamlModelConverter(AbstractJsonSchemaToBamlModelConverter):
             BamlClassModel | BamlEnumModel | _RefPlaceholder,
         ] = {}
         self._anonymous_type_counter = 0
+        self._cfg = config or JsonSchemaToBamlModelConverterConfig()
 
-    def convert(self, class_name: str) -> list[BamlClassModel | BamlEnumModel]:
+    def convert(self) -> list[BamlClassModel | BamlEnumModel]:
         """
         Performs the conversion from the JSON schema to BAML models.
 
@@ -104,7 +77,7 @@ class JsonSchemaToBamlModelConverter(AbstractJsonSchemaToBamlModelConverter):
         self._parse_schema_to_type_info(
             schema=self._root_schema,
             json_pointer="#",
-            forced_class_name=class_name,
+            forced_class_name=self._class_name,
         )
 
         # Extract all successfully created models from the definitions map
@@ -500,6 +473,13 @@ class JsonSchemaToBamlModelConverter(AbstractJsonSchemaToBamlModelConverter):
         if effective_type == "null":
             # Represents the literal 'null' type. Optionality is handled later.
             return BamlTypeInfo(base_type=BamlBaseType.NULL)
+
+        if effective_type == "baml_literal_string":
+            # Special case for BAML literal strings
+            return BamlTypeInfo(
+                base_type=BamlBaseType.LITERAL_STRING,
+                literal_value=schema["baml_literal_string"],
+            )
 
         # Handle missing type or unknown/unsupported types
         if not effective_type:
@@ -1073,3 +1053,31 @@ class _RefPlaceholder:
 
     def __init__(self, ref: str):
         self.ref = ref
+
+
+class JsonSchemaToBamlModelError(Exception):
+    """Base exception for errors in JsonSchemaToBamlModelConverter."""
+
+
+class PathNavigationError(JsonSchemaToBamlModelError):
+    """Raised when navigation through a JSON pointer path fails due to an unexpected node type."""
+
+
+class InvalidRefError(JsonSchemaToBamlModelError):
+    """Raised when a $ref is invalid."""
+
+
+class CircularRefError(JsonSchemaToBamlModelError):
+    """Raised when a circular $ref is detected."""
+
+
+class NameCollisionError(JsonSchemaToBamlModelError):
+    """Raised when a name collision occurs in model definitions."""
+
+
+class UnexpectedTypeError(JsonSchemaToBamlModelError):
+    """Raised when an unexpected type is encountered in definitions."""
+
+
+class RefResolutionError(JsonSchemaToBamlModelError):
+    """Raised when a $ref cannot be resolved."""

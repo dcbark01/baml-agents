@@ -5,14 +5,16 @@ from abc import ABC, abstractmethod
 from mcp.types import CallToolResult
 from pydantic import BaseModel
 
-from baml_agents.pydantic_mcp._import import pydantic_import_err_msg
+from baml_agents.deprecated.pydantic_mcp._import import pydantic_import_err_msg
 
 try:
     from pydantic_ai.mcp import MCPServer  # type: ignore
 except ImportError as e:
     raise ImportError(pydantic_import_err_msg) from e
 
-from baml_agents.pydantic_mcp._baml_tool_prompt_config import BamlToolPromptConfig
+from baml_agents.deprecated.pydantic_mcp._baml_tool_prompt_config import (
+    BamlToolPromptConfig,
+)
 
 
 class AbstractToolInvoker(ABC):
@@ -32,7 +34,9 @@ class ToolRunner(AbstractToolInvoker):
     async def run(self, result: BaseModel) -> list[CallToolResult]:
         """Run the tool calls from the result."""
         tool_calls: list[dict] | None = getattr(
-            result, self._prompt_cfg.tools_field, None,
+            result,
+            self._prompt_cfg.tools_field,
+            None,
         )
         if isinstance(result, dict) and self._prompt_cfg.id_field in result:
             tool_calls = [result]

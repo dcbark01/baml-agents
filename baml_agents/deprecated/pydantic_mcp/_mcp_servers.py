@@ -1,17 +1,12 @@
 from __future__ import annotations
 
 from contextlib import AsyncExitStack, asynccontextmanager
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Self,
-    TypeVar,
-)
+from typing import TYPE_CHECKING, Any, Self, TypeVar
 
 from baml_py.type_builder import TypeBuilder
 from mcp.types import CallToolResult, JSONRPCMessage, TextContent
 
-from baml_agents.pydantic_mcp._import import pydantic_import_err_msg
+from baml_agents.deprecated.pydantic_mcp._import import pydantic_import_err_msg
 
 try:
     from pydantic_ai.mcp import MCPServer  # type: ignore
@@ -19,13 +14,17 @@ try:
 except ImportError as e:
     raise ImportError(pydantic_import_err_msg) from e
 
-from baml_agents.pydantic_mcp._baml_tool_prompt_config import BamlToolPromptConfig
-from baml_agents.pydantic_mcp._json_schema_to_baml_converter import (
+from baml_agents.deprecated.pydantic_mcp._baml_tool_prompt_config import (
+    BamlToolPromptConfig,
+)
+from baml_agents.deprecated.pydantic_mcp._json_schema_to_baml_converter import (
     JsonSchemaToBamlConverter,
 )
-from baml_agents.pydantic_mcp._tool_runner import ToolRunner
-from baml_agents.pydantic_mcp._tool_to_baml_type import ToolToBamlType
-from baml_agents.pydantic_mcp._type_builder_orchestrator import TypeBuilderOrchestrator
+from baml_agents.deprecated.pydantic_mcp._tool_runner import ToolRunner
+from baml_agents.deprecated.pydantic_mcp._tool_to_baml_type import ToolToBamlType
+from baml_agents.deprecated.pydantic_mcp._type_builder_orchestrator import (
+    TypeBuilderOrchestrator,
+)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Callable, Iterable, Sequence

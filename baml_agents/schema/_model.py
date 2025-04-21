@@ -1,7 +1,7 @@
 import warnings
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 
 
 class BamlBaseType(Enum):
@@ -20,6 +20,10 @@ class BamlBaseType(Enum):
     ENUM = "enum"
     # Meta types - used during processing
     UNION = "union"  # Represents a union of other types
+    # BAML-specific types
+    LITERAL_STRING = "literal_string"
+    LITERAL_INT = "literal_int"
+    LITERAL_BOOL = "literal_bool"
 
 
 @dataclass
@@ -35,6 +39,8 @@ class BamlTypeInfo:
     custom_type_name: str | None = None
     # Optionality - derived from schema context (required list or explicit null type)
     is_optional: bool = False
+    # For literal types, the value itself
+    literal_value: Any | None = None
 
     def __post_init__(self):
         # Basic validation / canonical representation

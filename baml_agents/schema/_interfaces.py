@@ -1,4 +1,6 @@
+import json
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, Generic, Protocol, TypeVar, runtime_checkable
 
 from baml_agents.schema._model import BamlClassModel, BamlEnumModel
@@ -9,57 +11,63 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="TypeBuilder")
 
 
-class AbstractMcpSchemaToBamlModelConverter(ABC):
-    """
-    Abstract base class for MCP JSON Schema to BAML model converters.
-    Defines the public interface expected for all concrete converters.
-    """
+class BaseSchemaConverter:
+    def __init__(self, schema: str | Mapping[str, Any]):
+        if isinstance(schema, str):
+            try:
+                self._root_schema: dict[str, Any] = json.loads(schema)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON schema provided: {e}") from e
+        elif isinstance(schema, Mapping):
+            self._root_schema = dict(schema)
+        else:
+            raise TypeError(
+                f"Schema must be a JSON string or a dictionary, got {type(schema)}",
+            )
+
+
+class AbstractMcpSchemaToBamlModelConverter(ABC, BaseSchemaConverter):
+    @abstractmethod
+    def convert_tools(self) -> list[BamlClassModel | BamlEnumModel]:
+        pass
+
+
+class AbstractJsonSchemaToBamlModelConverter(ABC, BaseSchemaConverter):
+    def __init__(self, schema: str | Mapping[str, Any], class_name: str):
+        super().__init__(schema)
+        self._class_name = class_name
 
     @abstractmethod
     def convert(self) -> list[BamlClassModel | BamlEnumModel]:
-        """
-        Converts the loaded MCP JSON schema to a list of BAML model dataclasses.
-
-        Returns:
-            List of BamlClassModel and BamlEnumModel instances.
-
-        """
+        pass
 
 
-class AbstractJsonSchemaToBamlModelConverter(ABC):
-    """
-    Abstract base class for JSON Schema to BAML model converters.
-    Defines the public interface expected for all concrete converters.
-    """
+class BamlModelConverter:
+    def __init__(self, baml_models: list[BamlClassModel | BamlEnumModel]):
+        self._baml_models = baml_models
+
+
+class BamlSourceGenerator(ABC, Generic[T], BamlModelConverter):
+    """Abstract base for generating BAML source code."""
 
     @abstractmethod
-    def convert(self) -> list[BamlClassModel | BamlEnumModel]:
-        """
-        Converts the loaded JSON schema to a list of BAML model dataclasses.
-
-        Returns:
-            List of BamlClassModel and BamlEnumModel instances.
-
-        """
-
-
-class BamlGenerator(ABC, Generic[T]):
-    """Abstract base for generating BAML source code or TypeBuilder objects."""
-
-    @abstractmethod
-    def generate_baml_source(self) -> str:
+    def generate(self) -> str:
         """
         Generate BAML source code.
 
         :return: BAML source code as a string.
         """
 
+
+class BamlTypeBuilderConfigurer(ABC, Generic[T], BamlModelConverter):
+    """Abstract base for configuring BAML TypeBuilder objects by adding types/classes."""
+
     @abstractmethod
-    def add_to_type_builder(self, tb: T) -> T:
+    def configure(self, tb: T) -> T:
         """
         Add types/classes into the provided TypeBuilder.
 
-        :param tb: An instance of TypeBuilder to which types will be added.
+        :param tb: An instance of TypeBuilder to be configured.
         :return: The same TypeBuilder instance (return is for convenience; the object is mutated in place).
         """
 
@@ -69,9 +77,7 @@ class ArgsClassCallback(Protocol):
     def __call__(
         *,
         name: str,
-        prop_schema: dict[str, Any],
-        class_schema: dict[str, Any],
-        root_class_schema: dict[str, Any],
+        schema: dict[str, Any],
     ) -> str: ...
 
 
@@ -80,9 +86,7 @@ class ToolClassCallback(Protocol):
     def __call__(
         *,
         name: str,
-        prop_schema: dict[str, Any],
-        class_schema: dict[str, Any],
-        root_class_schema: dict[str, Any],
+        schema: dict[str, Any],
     ) -> str: ...
 
 
@@ -91,9 +95,7 @@ class ToolNameCallback(Protocol):
     def __call__(
         *,
         name: str,
-        prop_schema: dict[str, Any],
-        class_schema: dict[str, Any],
-        root_class_schema: dict[str, Any],
+        schema: dict[str, Any],
     ) -> str: ...
 
 

@@ -555,7 +555,7 @@ def test_json_schema_to_baml_model_converter(
     expected: list[BamlClassModel | BamlEnumModel],
     expected_warnings,
 ):
-    converter = JsonSchemaToBamlModelConverter(schema)
+    converter = JsonSchemaToBamlModelConverter(schema, class_name)
 
     with ExitStack() as stack:
         # enter a pytest.warns context for each expected warning;
@@ -563,7 +563,7 @@ def test_json_schema_to_baml_model_converter(
         for warning_type, match_regex in expected_warnings or []:
             stack.enter_context(pytest.warns(warning_type, match=match_regex))
 
-        actual = converter.convert(class_name)
+        actual = converter.convert()
 
     # deterministic comparison by sorting on the model name
     actual_sorted = sorted(actual, key=lambda m: m.name)

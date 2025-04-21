@@ -1,7 +1,7 @@
 from baml_agents.utils._python import sole
 
 
-def view_prompt(request):
+def get_payload(request):
     messages = request.body.json()["messages"]
     prompt_parts = []
     for message in messages:
