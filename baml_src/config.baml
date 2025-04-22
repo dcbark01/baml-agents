@@ -11,11 +11,3 @@ client<llm> Default {
     model gpt-4.1
   }
 }
-class ParamsForCalculate {
-  expression string
-}
-
-class Calculate {
-  tool_id "calculate_tool"
-  params ParamsForCalculate  // Calculates/evaluates the given expression.
-}
