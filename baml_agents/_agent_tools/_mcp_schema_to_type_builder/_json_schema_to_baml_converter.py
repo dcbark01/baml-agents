@@ -6,7 +6,6 @@ from baml_py.type_builder import TypeBuilder
 
 from baml_agents._agent_tools._utils._snake_to_pascal import snake_to_pascal
 
-
 from ._abstract_json_schema_to_baml_converter import AbstractJsonSchemaToBamlConverter
 
 

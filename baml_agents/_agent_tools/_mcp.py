@@ -21,7 +21,6 @@ from baml_agents._agent_tools._utils._snake_to_pascal import pascal_to_snake
 from baml_client.async_client import BamlCallOptions
 from baml_client.type_builder import TypeBuilder
 
-
 if TYPE_CHECKING:
     from pydantic import BaseModel
 

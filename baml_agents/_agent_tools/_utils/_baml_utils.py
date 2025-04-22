@@ -1,5 +1,4 @@
 from typing import TypeVar
-import html
 
 from baml_agents._agent_tools._utils._sole import sole
 
@@ -20,5 +19,7 @@ def get_prompt(request):
 
 
 def display_prompt(request):
-    escaped_prompt = get_prompt(request).replace("<", "‹").replace(">", "›")
+    escaped_prompt = (
+        get_prompt(request).replace("<", "‹").replace(">", "›")  # noqa: RUF001
+    )
     print(escaped_prompt)  # noqa: T201

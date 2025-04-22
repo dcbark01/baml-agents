@@ -3,7 +3,6 @@ import html
 import json
 import uuid
 from collections.abc import Callable
-from contextlib import contextmanager
 from pprint import pformat
 from typing import Any, Generic, Literal, TypeVar, cast
 
@@ -80,7 +79,7 @@ class _StreamingInterceptorWrapper:
         return wrapper
 
 
-class JupyterBamlStreamer:
+class JupyterOutputBox:
     """
     Context manager that:
       - Renders pretty <pre> formatted output (preserves whitespace and newlines).
@@ -102,14 +101,7 @@ class JupyterBamlStreamer:
         self._active = False
         self._handle = None
 
-    @contextmanager
-    def session(self):
-        """
-        Context manager for JupyterBamlStreamer.
-        Usage:
-            with streamer.session():
-                ...
-        """
+    def __enter__(self):
         if not self._active:
             self._handle = display(
                 {"text/html": self._initial_html},
@@ -117,19 +109,19 @@ class JupyterBamlStreamer:
                 raw=True,
             )
             self._active = True
-        try:
-            yield self
-        finally:
-            if self.clear_after_finish and self._active:
-                js = f"""
-                (function(){{
-                  var el = document.getElementById("{self.display_id}");
-                  if (el) el.remove();
-                }})();
-                """
-                display(Javascript(js))
-            self._active = False
-            self._handle = None
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.clear_after_finish and self._active:
+            js = f"""
+            (function(){{
+              var el = document.getElementById("{self.display_id}");
+              if (el) el.remove();
+            }})();
+            """
+            display(Javascript(js))
+        self._active = False
+        self._handle = None
 
     def update(self, data, *, use_br: bool = False):
         if not isinstance(data, str):
@@ -157,8 +149,27 @@ class JupyterBamlStreamer:
             )
         self._handle.update({"text/html": new_html}, raw=True)
 
-    def show(self, result):
-        self.update(pformat(result.model_dump(), width=200, sort_dicts=False))
+    def display(
+        self,
+        formatter: Literal["json", "pformat"] | Callable[[Any], None] | None = None,
+    ):
+        formatter = formatter or "pformat"
+
+        def update_result(result):
+            if formatter == "json":
+                try:
+                    s = result.model_dump_json(indent=4)
+                except AttributeError:
+                    s = json.dumps(result, indent=4)
+                self.update(s)
+            elif formatter == "pformat":
+                self.update(pformat(result.model_dump(), width=200, sort_dicts=False))
+            elif callable(formatter):
+                formatter(result)
+            else:
+                raise ValueError(f"Unknown formatter: {formatter}")
+
+        return update_result
 
 
 class JupyterBamlCollector(Generic[T]):
@@ -399,7 +410,7 @@ class JupyterBamlMonitor(Generic[T]):
     def __init__(self, ai: T, *, summarizer=None):
         self._ai = ai
         self._summarizer = summarizer
-        self._streamer: JupyterBamlStreamer | None = None
+        self._streamer: JupyterOutputBox | None = None
         self._collector: JupyterBamlCollector | None = None
 
     @property
@@ -423,16 +434,17 @@ class JupyterBamlMonitor(Generic[T]):
             raise RuntimeError("JupyterTraceLLMCalls tracer has not been initialized.")
         await self._collector.display_session(name)
 
-    @contextmanager
-    def session(self):
-        with JupyterBamlStreamer(clear_after_finish=True).session() as streamer:
-            self._streamer = streamer
-            self._collector = JupyterBamlCollector(
-                self._ai,
-                stream_callback=streamer.show,
-                intent_summarizer=self._summarizer,
-            )
-            try:
-                yield self
-            finally:
-                self._streamer = None
+    def __enter__(self):
+        self._streamer = JupyterOutputBox(clear_after_finish=True)
+        self._streamer.__enter__()
+        self._collector = JupyterBamlCollector(
+            self._ai,
+            stream_callback=self._streamer.show,
+            intent_summarizer=self._summarizer,
+        )
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self._streamer is not None:
+            self._streamer.__exit__(exc_type, exc_val, exc_tb)
+            self._streamer = None

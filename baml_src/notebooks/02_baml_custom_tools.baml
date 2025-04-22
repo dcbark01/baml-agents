@@ -1,17 +1,17 @@
 
-function IntroToTools_GetWeatherInfo(text: string) -> IntroToTools_GetWeatherInfo_Parameters {
+function BamlCustomTools_GetWeatherInfo(text: string) -> BamlCustomTools_GetWeatherInfo_Parameters {
   client Default
   prompt #"
     {{ text }}
     {{ ctx.output_format }}
   "#
 }
-class IntroToTools_GetWeatherInfo_Parameters {
+class BamlCustomTools_GetWeatherInfo_Parameters {
     city string
     measurement "celsius" | "fahrenheit" @description(#"default: celsius"#)
 }
 test t {
-    functions [IntroToTools_GetWeatherInfo]
+    functions [BamlCustomTools_GetWeatherInfo]
     args {city "Hi, I'm John from LA"}
 }
 

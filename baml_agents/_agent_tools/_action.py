@@ -1,6 +1,6 @@
 import inspect
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, ClassVar, Self
+from typing import Any, ClassVar, Self
 
 from loguru import logger
 from pydantic import BaseModel
