@@ -12,7 +12,7 @@
 pip install baml‑agents==0.5.0
 ```
 
-This repository is intended to share some useful patterns I use while working with BAML. The API is unstable and may change. Feedback is always welcome!
+This repository is intended to share some useful patterns I use while working with BAML. The API is unstable and may change in future versions. Feedback is always welcome!
 
 ## Contents
 
