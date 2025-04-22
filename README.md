@@ -18,15 +18,15 @@ Feedback is always welcome!
 
 ## Contents
 
-1.  [Flexible LLM Client Management in BAML](notebooks/01_llm_clients.ipynb)
+1.  [Flexible LLM Client Management in BAML](notebooks/01_baml_llm_client_config.ipynb)
     - Effortlessly switch between different LLM providers (like OpenAI, Anthropic, Google) at runtime using simple helper functions.
     - Bridge compatibility gaps: Connect to unsupported LLM backends or tracing systems (e.g., Langfuse, LangSmith) via standard proxy setups.
     - Solve common configuration issues: Learn alternatives for managing API keys and client settings if environment variables aren't suitable.
-2.  [Introduction to AI Tool Use with BAML](notebooks/02_intro_to_ai_using_tools.ipynb)
+2.  [Introduction to AI Tool Use with BAML](notebooks/02_baml_custom_tools.ipynb)
     - Learn how to define custom actions (tools) for your AI using Pydantic models, making your agents capable of _doing_ things.
     - See how to integrate these tools with BAML manually or dynamically using `ActionRunner` for flexible structured outputs.
     - Understand how BAML translates goals into structured LLM calls that select and utilize the appropriate tool.
-3.  [Integrating Standardized MCP Tools with BAML](notebooks/03_using_mcp_tools_with_baml.ipynb)
+3.  [Integrating Standardized MCP Tools with BAML](notebooks/03_baml_with_mcp_tools.ipynb)
     - Discover how to leverage the Model Context Protocol (MCP) to easily plug-and-play pre-built 3rd party tools (like calculators, web search) into your BAML agents.
     - See `ActionRunner` in action, automatically discovering and integrating tools from MCP servers with minimal configuration.
     - Learn techniques to filter and select specific MCP tools to offer to the LLM, controlling the agent's capabilities precisely.
