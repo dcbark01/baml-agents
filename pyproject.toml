@@ -1,6 +1,6 @@
 [project]
 name = "baml-agents"
-version = "0.5.0"
+version = "0.6.0"
 description = "Building Agents with BAML, MCP Tools, and 12-Factor-Agents principles"
 readme = "README.md"
 
