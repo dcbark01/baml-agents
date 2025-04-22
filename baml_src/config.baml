@@ -9,5 +9,6 @@ client<llm> Default {
   provider openai
   options {
     model gpt-4.1
+    base_url env.OPENAI_API_BASE
   }
 }

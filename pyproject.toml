@@ -18,6 +18,7 @@ dev = [
     "jupyter-black>=0.4.0",
     "pytest>=8.3.5",
     "pytest-watch>=4.2.0",
+    "python-dotenv>=1.1.0",
 ]
 
 ##############################
@@ -72,6 +73,7 @@ lint.ignore = [
     # --- Return/Assignment & Warnings ---
     "RET504", # Unnecessary assignment before `return` statement
     "B028",   # No explicit `stacklevel` keyword argument found
+    "PGH003", # Use explicit error codes with "# type: ignore"
 
     # --- Exception Handling ---
     "EM101",  # Exception must not use a string literal, assign to variable first
