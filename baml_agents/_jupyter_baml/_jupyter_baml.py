@@ -1,5 +1,6 @@
 import asyncio
 import html
+import inspect
 import json
 import uuid
 from collections.abc import Callable
@@ -38,45 +39,6 @@ def _get_log_duration_ms(log) -> int | None:
     if timing is not None:
         return getattr(timing, "duration_ms", None)
     return None
-
-
-class _StreamingInterceptorWrapper:
-    def __init__(self, ai: Any, callback: Callable, /):
-        self._ai = ai
-        self._callback = callback
-
-    def __getattribute__(self, name: str) -> Any:
-        ai_instance = object.__getattribute__(self, "_ai")
-        callback = object.__getattribute__(self, "_callback")
-        if name in {
-            "_ai",
-            "_callback",
-            "__class__",
-            "__init__",
-            "__getattribute__",
-            "__dict__",
-            "__await__",
-            "__aiter__",
-            "__anext__",
-        }:
-            return object.__getattribute__(self, name)
-
-        attr = getattr(ai_instance.stream, name)
-
-        async def wrapper(*args, **kwargs):
-            stream_obj = attr(*args, **kwargs)
-            async for partial in stream_obj:
-                callback(partial)
-            final_response = await stream_obj.get_final_response()
-            callback(final_response)
-            return final_response
-
-        wrapper.__name__ = name
-        wrapper.__qualname__ = f"{type(self).__name__}.{name}"
-        wrapper.__doc__ = getattr(attr, "__doc__", None)
-        wrapper.__annotations__ = getattr(attr, "__annotations__", {})
-
-        return wrapper
 
 
 class JupyterOutputBox:
@@ -170,6 +132,87 @@ class JupyterOutputBox:
                 raise ValueError(f"Unknown formatter: {formatter}")
 
         return update_result
+
+
+class _StreamingInterceptorWrapper:
+    def __init__(self, ai: Any, callback: Callable, /):
+        self._ai = ai
+        self._callback = callback
+
+    def __getattribute__(self, name: str) -> Any:
+        # Use object.__getattribute__ to access instance variables directly
+        # to avoid recursive calls to this __getattribute__ method.
+        try:
+            return object.__getattribute__(self, name)
+        except AttributeError:
+            # If the attribute is not directly on the wrapper, get it from the wrapped object.
+            pass
+
+        ai_instance = object.__getattribute__(self, "_ai")
+        callback = object.__getattribute__(self, "_callback")
+
+        # Special handling for methods required by the wrapper itself or python internals
+        # Note: __getattr__ might be simpler if we only intercept non-dunder methods.
+        # But __getattribute__ is more powerful for intercepting *everything*.
+        if name in {
+            "_ai",
+            "_callback",
+            "__class__",
+            "__init__",
+            "__getattribute__",
+            "__setattr__",  # Added for completeness, though not strictly needed for the example
+            "__delattr__",  # Added for completeness
+            "__dict__",
+            "__dir__",  # Often useful to proxy dir() calls
+            "__repr__",  # Might want to customize repr
+            "__str__",  # Might want to customize str
+            # Async specific methods often checked by libraries
+            "__await__",
+            "__aiter__",
+            "__anext__",
+            "__aenter__",
+            "__aexit__",
+        }:
+            # If it's one of our internal/special methods, get it directly from self
+            # This was handled by the try/except block above now. Redundant but kept for clarity.
+            return object.__getattribute__(self, name)
+
+        # Get the attribute from the *stream* property of the wrapped object
+        # This is specific to the Streaming Interceptor's logic
+        attr = getattr(ai_instance.stream, name)
+
+        # Only wrap if it's callable (likely a method)
+        if not callable(attr):
+            return attr  # Return non-callable attributes directly
+
+        # --- Streaming Specific Wrapping Logic ---
+        # This wrapper assumes the underlying method is async and returns a stream
+        async def stream_wrapper(*args, **kwargs):
+            stream_obj = attr(*args, **kwargs)
+            async for partial in stream_obj:
+                callback(partial)
+            # Ensure get_final_response exists and is awaitable if needed
+            # This part might need adjustment based on the actual stream object interface
+            final_response = None
+            if hasattr(
+                stream_obj, "get_final_response"
+            ) and inspect.iscoroutinefunction(stream_obj.get_final_response):
+                final_response = await stream_obj.get_final_response()
+                callback(final_response)
+            # What if get_final_response doesn't exist or isn't async? Need fallback?
+            # For now, assume it exists and is async as per the original code.
+            return (
+                final_response  # Or maybe the stream_obj itself if no final response?
+            )
+
+        # Copy metadata
+        stream_wrapper.__name__ = name
+        stream_wrapper.__qualname__ = f"{type(self).__name__}.{name}"
+        stream_wrapper.__doc__ = getattr(attr, "__doc__", None)
+        stream_wrapper.__annotations__ = getattr(attr, "__annotations__", {})
+        # Consider adding functools.wraps for more robust metadata copying
+
+        return stream_wrapper
 
 
 class JupyterBamlCollector(Generic[T]):

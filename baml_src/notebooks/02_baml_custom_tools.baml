@@ -15,10 +15,7 @@ test t {
     args {city "Hi, I'm John from LA"}
 }
 
-class NextAction {
-    @@dynamic
-}
-function GetNextAction(goal: string) -> NextAction {
+function BamlCustomTools_GetNextAction(goal: string) -> BamlCustomTools_NextAction {
     client Default
     prompt #"
         Please select the next best action to achieve the goal.
@@ -27,6 +24,9 @@ function GetNextAction(goal: string) -> NextAction {
         {{ goal }}
         </goal>
         
-        {{ ctx.output_format(prefix="Answer in JSON format with exactly one next best action:\n") }}
+        {{ ctx.output_format(or_splitter=" OR ", prefix="Answer in JSON format with exactly one next best action:\n") }}
     "#
+}
+class BamlCustomTools_NextAction {
+    @@dynamic
 }

@@ -6,26 +6,28 @@ import shlex
 import subprocess
 import threading
 from collections.abc import Callable, Sequence
+from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
+from baml_py.type_builder import TypeBuilder
 from loguru import logger
+from pydantic import BaseModel
 
 from baml_agents._agent_tools._action import Action
+from baml_agents._agent_tools._baml_client_passthrough_wrapper import PassthroughWrapper
 from baml_agents._agent_tools._mcp_schema_to_type_builder._facade import (
     add_available_actions,
 )
 from baml_agents._agent_tools._str_result import Result
 from baml_agents._agent_tools._tool_definition import McpToolDefinition
 from baml_agents._agent_tools._utils._snake_to_pascal import pascal_to_snake
-from baml_client.async_client import BamlCallOptions
-from baml_client.type_builder import TypeBuilder
-
-if TYPE_CHECKING:
-    from pydantic import BaseModel
 
 # Use a lock to avoid concurrent shelve access issues
 _shelve_lock = threading.Lock()
+
+T = TypeVar("T", bound=TypeBuilder)
+B = TypeVar("B")
 
 
 def get_cache_path() -> str:
@@ -44,16 +46,116 @@ def normalize_action_id(action_id):
     return pascal_to_snake(action_id)
 
 
-class ActionRunner:
+NO_SILENT_TYPEBUILDER_OVERWRITE = True
+
+
+class ActionRunner(Generic[T, B]):
     def __init__(
         self,
+        tbc: type[T],
         *,
+        b: B | None = None,
         name_to_runner: dict[str, Callable] | None = None,
         cache: bool | None = None,
     ):
+        self._original_baml_client = b
+        self._baml_client = (
+            PassthroughWrapper(
+                self._original_baml_client,
+                mutate_args_kwargs=self._mutate_baml_function_args_kwargs,
+            )
+            if self._original_baml_client is not None
+            else None
+        )
         self._actions = []
         self._tool_to_function = name_to_runner or {}
         self._cache = False if cache is None else cache
+        self._tb_cls = tbc
+
+        self._teleport_already_used = False
+        self._teleport_baml_class = None
+        self._teleport_tb = None
+        self._teleport_include = None
+
+    def _mutate_baml_function_args_kwargs(
+        self, args, kwargs, baml_function_return_type_name
+    ):
+        tb = None
+        baml_options = None
+        baml_options_args_i = None
+        for v, i in enumerate(args):
+            if isinstance(v, dict) and "tb" in v and isinstance(v["tb"], TypeBuilder):
+                baml_options = v
+                baml_options_args_i = i
+                tb = v["tb"]
+        for v in kwargs:
+            if isinstance(v, dict) and "tb" in v and isinstance(v["tb"], TypeBuilder):
+                baml_options = v
+                tb = v["tb"]
+        if tb and self._teleport_tb:
+            raise ValueError(
+                """Both baml_options={"tb": tb) and .b_(tb=tb) are set. Please use only one."""
+            )
+        tb = tb or self._teleport_tb or self._tb_cls()  # type: ignore
+
+        if self._teleport_already_used:
+            raise ValueError(
+                "Reusing wrappers not allowed. Please create a new wrapper for each call."
+            )
+
+        baml_function_return_type_name = (
+            self._teleport_baml_class or baml_function_return_type_name
+        )
+
+        tb = self.tb(baml_function_return_type_name, tb=tb, include=self._teleport_include)  # type: ignore
+
+        self._teleport_already_used = True
+        self._teleport_baml_class = None
+        self._teleport_tb = None
+        self._teleport_include = None
+
+        baml_options = {**(baml_options or {}), "tb": tb}
+        if baml_options_args_i:
+            if NO_SILENT_TYPEBUILDER_OVERWRITE:
+                raise ValueError(
+                    """Please provide TypeBuilder like this: b_(tb=tb).MyBamlFunction() instead of: MyBamlFunction(baml_options={'tb': tb})."""
+                )
+            new_args = tuple(
+                baml_options if idx == baml_options_args_i else arg
+                for idx, arg in enumerate(args)
+            )
+            return new_args, kwargs
+        if NO_SILENT_TYPEBUILDER_OVERWRITE and "baml_options" in kwargs:
+            raise ValueError(
+                """Please provide TypeBuilder like this: b_(tb=tb).MyBamlFunction() instead of: MyBamlFunction(baml_options={'tb': tb})."""
+            )
+        new_kwargs = {
+            **kwargs,
+            "baml_options": baml_options,
+        }
+        return args, new_kwargs
+
+    @property
+    def b(self) -> B:
+        return self.b_()
+
+    def b_(
+        self,
+        *,
+        return_class: str | type["BaseModel"] | None = None,
+        tb: T | None = None,
+        include: Callable[[McpToolDefinition], bool] | None = None,
+    ) -> B:
+        if self._baml_client is None:
+            raise ValueError(
+                "Field not set. Please pass argument `b=b` (BAML Client) to the constructor, for example: ActionRunner(..., b=b)."
+            )
+
+        self._teleport_already_used = False
+        self._teleport_baml_class = return_class
+        self._teleport_tb = tb
+        self._teleport_include = include
+        return self._baml_client  # type: ignore
 
     def add_from_mcp_server(
         self,
@@ -114,16 +216,24 @@ class ActionRunner:
     def actions(self):
         return self._actions
 
-    def bo(self) -> BamlCallOptions:
-        return {"tb": self.tb()}
-
     def tb(
-        self, *, include: Callable[[McpToolDefinition], bool] | None = None
-    ) -> TypeBuilder:
+        self,
+        field: str | type["BaseModel"],
+        /,
+        *,
+        tb: T | None = None,
+        include: Callable[[McpToolDefinition], bool] | None = None,
+    ) -> T:
+        tb = tb or self._tb_cls()  # type: ignore
+        field_name = (
+            field.__name__
+            if isinstance(field, type) and issubclass(field, BaseModel)
+            else field
+        )
         actions = self.actions
         if include is not None:
             actions = [a for a in actions if include(a)]
-        return add_available_actions("NextAction", actions, TypeBuilder())
+        return add_available_actions(field_name, actions, tb)
 
 
 def list_tools(

@@ -10,6 +10,10 @@ from baml_agents._jupyter_baml._jupyter_baml import (
     JupyterOutputBox,
 )
 from baml_agents._project_utils._init_logging import init_logging
+from baml_agents._jupyter_baml._jupyter_chat_widget import (
+    ChatMessage,
+    JupyterChatWidget,
+)
 
 __all__ = [
     "Action",
@@ -22,4 +26,6 @@ __all__ = [
     "display_prompt",
     "init_logging",
     "with_model",
+    "ChatMessage",
+    "JupyterChatWidget",
 ]
