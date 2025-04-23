@@ -9,6 +9,7 @@ from collections.abc import Callable, Sequence
 from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from copy import deepcopy
 
 from baml_py.type_builder import TypeBuilder
 from loguru import logger
@@ -55,7 +56,6 @@ class ActionRunner(Generic[T, B]):
         tbc: type[T],
         *,
         b: B | None = None,
-        name_to_runner: dict[str, Callable] | None = None,
         cache: bool | None = None,
     ):
         self._original_baml_client = b
@@ -68,11 +68,10 @@ class ActionRunner(Generic[T, B]):
             else None
         )
         self._actions = []
-        self._tool_to_function = name_to_runner or {}
+        self._tool_to_function = {}
         self._cache = False if cache is None else cache
         self._tb_cls = tbc
 
-        self._teleport_already_used = False
         self._teleport_baml_class = None
         self._teleport_tb = None
         self._teleport_include = None
@@ -98,18 +97,12 @@ class ActionRunner(Generic[T, B]):
             )
         tb = tb or self._teleport_tb or self._tb_cls()  # type: ignore
 
-        if self._teleport_already_used:
-            raise ValueError(
-                "Reusing wrappers not allowed. Please create a new wrapper for each call."
-            )
-
         baml_function_return_type_name = (
             self._teleport_baml_class or baml_function_return_type_name
         )
 
         tb = self.tb(baml_function_return_type_name, tb=tb, include=self._teleport_include)  # type: ignore
 
-        self._teleport_already_used = True
         self._teleport_baml_class = None
         self._teleport_tb = None
         self._teleport_include = None
@@ -151,7 +144,6 @@ class ActionRunner(Generic[T, B]):
                 "Field not set. Please pass argument `b=b` (BAML Client) to the constructor, for example: ActionRunner(..., b=b)."
             )
 
-        self._teleport_already_used = False
         self._teleport_baml_class = return_class
         self._teleport_tb = tb
         self._teleport_include = include
@@ -214,7 +206,7 @@ class ActionRunner(Generic[T, B]):
 
     @property
     def actions(self):
-        return self._actions
+        return deepcopy(self._actions)
 
     def tb(
         self,
@@ -230,7 +222,7 @@ class ActionRunner(Generic[T, B]):
             if isinstance(field, type) and issubclass(field, BaseModel)
             else field
         )
-        actions = self.actions
+        actions = self._actions
         if include is not None:
             actions = [a for a in actions if include(a)]
         return add_available_actions(field_name, actions, tb)

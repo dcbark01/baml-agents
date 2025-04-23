@@ -23,6 +23,20 @@ class Action(BaseModel, ABC):
     _alias: ClassVar[str | None] = None
     _mcp_annotations: ClassVar[dict[str, Any] | None] = None
 
+    @classmethod
+    def get_action_id(cls) -> str:
+        """
+        Returns the canonical name of the action, using the alias if set, otherwise the class name,
+        always in snake_case.
+        """
+        tool_name_override = cls._alias
+        tool_name = (
+            tool_name_override
+            if isinstance(tool_name_override, str) and tool_name_override
+            else cls.__name__
+        )
+        return pascal_to_snake(tool_name)
+
     @abstractmethod
     def run(self) -> Result: ...
 
@@ -38,14 +52,8 @@ class Action(BaseModel, ABC):
         """
         Generates the strict MCPToolDefinition dataclass instance for this tool.
         """
-        # 1. Determine Tool Name
-        tool_name_override = cls._alias
-        tool_name = (
-            tool_name_override
-            if isinstance(tool_name_override, str) and tool_name_override
-            else cls.__name__
-        )
-        tool_name = pascal_to_snake(tool_name)  # Convert to snake_case
+        # 1. Determine Tool Name using the property for canonicalization
+        tool_name = cls.get_action_id()
 
         # 2. Determine Tool Description
         tool_desc = inspect.getdoc(cls) or f"Executes the {tool_name} tool."

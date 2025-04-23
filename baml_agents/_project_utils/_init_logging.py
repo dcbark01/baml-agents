@@ -113,7 +113,10 @@ class _LogFormatter:
 
 
 def init_logging(
-    root_path=None, working_directory=None, color_config: LogColorConfig | None = None
+    level: str | None = None,
+    root_path=None,
+    working_directory=None,
+    color_config: LogColorConfig | None = None,
 ):
     root_path = root_path or get_root_path()
     color_config = color_config or LogColorConfig()
@@ -123,5 +126,5 @@ def init_logging(
     logger.add(
         sys.stdout,
         format=formatter,
-        level="TRACE",
+        level=level or "TRACE",
     )

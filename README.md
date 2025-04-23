@@ -31,7 +31,7 @@ pip install "baml‑agents>=0.6.0,<0.7.0"
 4.  [Interactive BAML Development in Jupyter](notebooks/04_interactive_baml_jupyter.ipynb)
     - See BAML's structured data generation stream _live_ into your Jupyter output cell as the LLM generates it.
     - Interactively inspect the details: Use collapsible sections to view full LLM prompts and responses, optionally grouped by call or session, directly in the notebook.
-    - Chat with your agent: Interactive chat widget right in the notebook, allowing you to ask questions and see the agent's responses in real-time.
+    - Chat with your agent: Interactive chat widget right in the notebook, allowing you to chat with your agent in real-time.
 
 ## Running the Notebooks
 
