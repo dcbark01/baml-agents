@@ -289,10 +289,6 @@ class JupyterBamlCollector(Generic[T]):
             # Defensive: fallback to default label if summarizer fails
             summary_label = None
 
-        response_str = str(raw_llm_response).replace('"', "")
-        action_count = response_str.count("action:")
-        tool_count = response_str.count("tool:")
-        suffix = self._get_suffix(action_count, tool_count)
         price_and_duration = ""
         model_name = ""
         if not omit_cost_and_model and log is not None and log.calls:
@@ -313,8 +309,9 @@ class JupyterBamlCollector(Generic[T]):
         if summary_label is not None:
             label = f"Completion | {summary_label}"
         else:
+            suffix = ""
             if not omit_cost_and_model:
-                suffix = f"{suffix}" + f"{price_and_duration}{model_name}"
+                suffix = f"{price_and_duration}{model_name}"
             label = f"Completion{' |'if suffix else ''}{suffix}"
         return label, str(raw_llm_response)
 
@@ -358,26 +355,37 @@ class JupyterBamlCollector(Generic[T]):
                 hide_text_under_a_button(get_key(i, k), v, visibility=completions)
                 completion_idx += 1
 
-    # --- CORRECTED display_session METHOD ---
-    async def display_session(self, root_name: str, *, show_depth=0):
+    async def display_session(
+        self,
+        root_name: str,
+        *,
+        show_depth=0,
+        prompts: Literal["always_hide", "hide"] = "hide",
+        completions: Literal["always_hide", "hide"] = "hide",
+        show_everything: bool = False,
+    ):
         nested_buttons = {}
         logs = list(self.collector.logs)  # Ensure it's a list for indexing
 
         # --- Populate nested_buttons with unique keys ---
         # Gather completion buttons first as they might involve async calls (summarizer)
-        completion_button_coros = [
-            self._get_completion_button(
-                log.raw_llm_response,
-                log=log,
-                omit_cost_and_model=True,  # Keep True as per original logic for this func
-            )
-            for log in logs
-        ]
+        completion_button_coros = []
+        if completions != "always_hide":
+            completion_button_coros = [
+                self._get_completion_button(
+                    log.raw_llm_response,
+                    log=log,
+                    omit_cost_and_model=False,  # Keep True as per original logic for this func
+                )
+                for log in logs
+            ]
 
         # Gather results, handling potential exceptions during gather
-        completion_results = await asyncio.gather(
-            *completion_button_coros, return_exceptions=True
-        )
+        completion_results = []
+        if completions != "always_hide":
+            completion_results = await asyncio.gather(
+                *completion_button_coros, return_exceptions=True
+            )
 
         # Now iterate through logs *with their index* to build the final dict
         for i, log in enumerate(logs, start=1):
@@ -391,31 +399,33 @@ class JupyterBamlCollector(Generic[T]):
             for k, v in prompt_buttons.items():
                 # Add index prefix for guaranteed uniqueness
                 unique_key = f"{log_prefix}{k}"
-                nested_buttons[unique_key] = v
+                if prompts != "always_hide":
+                    nested_buttons[unique_key] = v
 
             # 2. Add Completion Button for this log with unique key
-            completion_data = completion_results[i - 1]  # Use i-1 for 0-based index
+            if completions != "always_hide":
+                completion_data = completion_results[i - 1]  # Use i-1 for 0-based index
 
-            if isinstance(completion_data, Exception):
-                raise completion_data
+                if isinstance(completion_data, Exception):
+                    raise completion_data
 
-            if completion_data is not None:  # Check if button generation succeeded
-                completion_k, completion_v = completion_data  # type: ignore
-                # Add index prefix for guaranteed uniqueness
-                unique_key = f"{log_prefix}{completion_k}"
-                nested_buttons[unique_key] = completion_v
-            else:
-                # Handle case where button generation returned None unexpectedly
-                nested_buttons[f"{log_prefix}Completion (Not Available)"] = (
-                    "Completion data could not be generated."
-                )
+                if completion_data is not None:  # Check if button generation succeeded
+                    completion_k, completion_v = completion_data  # type: ignore
+                    # Add index prefix for guaranteed uniqueness
+                    unique_key = f"{log_prefix}{completion_k}"
+                    nested_buttons[unique_key] = completion_v
+                else:
+                    # Handle case where button generation returned None unexpectedly
+                    nested_buttons[f"{log_prefix}Completion (Not Available)"] = (
+                        "Completion data could not be generated."
+                    )
 
         # --- Display using the populated nested_buttons ---
-        root_label = f"{root_name}, Cost: {self.format_total_cost()}"
+        root_label = f"{root_name} | Cost: {self.format_total_cost()}"
         hide_text_under_a_button_nested(
             root_label,
             nested_buttons,
-            visibility="hide",  # Default visibility for the nested structure
+            visibility="always_show" if show_everything else "hide",
             hide_after_level=show_depth,
         )
 
@@ -445,22 +455,6 @@ class JupyterBamlCollector(Generic[T]):
         duration_sec = f"{total_duration_ms/1000:.2f}s" if total_duration_ms else "N/A"
         return f"{total_cost_usd_per_thousand:.2f}$/1k | {duration_sec} | {', '.join(all_models)}"
 
-    @staticmethod
-    def _get_suffix(
-        action_count: int,
-        tool_count: int,
-    ) -> str:
-        action_part = f"actions={action_count}" if action_count else ""
-        tool_part = f"tools={tool_count}" if tool_count else ""
-
-        if action_part and tool_part:
-            return f" | {action_part} | {tool_part})"
-        if action_part:
-            return f" | {action_part}"
-        if tool_part:
-            return f" | {tool_part}"
-        return ""
-
 
 class JupyterBamlMonitor(Generic[T]):
     def __init__(self, ai: T, *, summarizer=None):
@@ -489,10 +483,22 @@ class JupyterBamlMonitor(Generic[T]):
             raise RuntimeError("JupyterTraceLLMCalls tracer has not been initialized.")
         await self._collector.display_calls(prompts=prompts, completions=completions)
 
-    async def display_session(self, name: str):
+    async def display_session(
+        self,
+        name: str,
+        *,
+        prompts: Literal["always_hide", "hide"] = "hide",
+        completions: Literal["always_hide", "hide"] = "hide",
+        show_everything: bool = False,
+    ):
         if self._collector is None:
             raise RuntimeError("JupyterTraceLLMCalls tracer has not been initialized.")
-        await self._collector.display_session(name)
+        await self._collector.display_session(
+            name,
+            prompts=prompts,
+            completions=completions,
+            show_everything=show_everything,
+        )
 
     def __enter__(self):
         self._streamer = JupyterOutputBox(clear_after_finish=True)

@@ -11,7 +11,7 @@
 This repository shares useful patterns I use when working with BAML. The API is unstable and may change in future versions. Install with:
 
 ```bash
-pip install "baml‑agents>=0.7.0,<0.8.0"
+pip install "baml‑agents>=0.8.0,<0.9.0"
 ```
 
 ## Contents
@@ -32,6 +32,62 @@ pip install "baml‑agents>=0.7.0,<0.8.0"
     - See BAML's structured data generation stream _live_ into your Jupyter output cell as the LLM generates it.
     - Interactively inspect the details: Use collapsible sections to view full LLM prompts and responses, optionally grouped by call or session, directly in the notebook.
     - Chat with your agent: Interactive chat widget right in the notebook, allowing you to chat with your agent in real-time.
+5.  [Simple Agent Demonstration](notebooks/05_simple_agent_demo.ipynb)
+    - Putting it all together: Build a simple, functional agent capable of tackling a multi-step task.
+    - Learn how to combine custom Python actions (defined as `Action` classes) with standardized MCP tools (like calculators or time servers) managed by `ActionRunner`.
+    - Follow the agent's decision-making loop driven by BAML's structured output generation (`GetNextAction`), see it execute tools, and observe how it uses the results to progress.
+    - Includes demonstration of `JupyterBamlMonitor` for transparent inspection of the underlying LLM interactions.
+
+## Simple example
+
+> [!TIP]
+> The code below is trimmed for brevity to **illustrate the core concepts**. Some function names or setup steps may differ slightly from the full notebook implementation for clarity in this example. The full, runnable code is available in the notebook <a href="notebooks/05_simple_agent_demo.ipynb">Simple Agent Demonstration (notebooks/05_simple_agent_demo.ipynb)</a>
+
+<details>
+  <summary>Show code for the example below</summary>
+
+```python
+def get_weather_info(city: str):
+    return f"The weather in {city} is 63 degrees fahrenheit with cloudy conditions."
+
+def stop_execution(final_answer: str):
+    return f"Final answer: {final_answer}"
+
+b = LLMClient("gpt-4.1-nano")
+r = ActionRunner() # Doing an action means using a tool
+
+# Adding tool to allow the agent to do math
+r.add_from_mcp_server(server="uvx mcp-server-calculator")
+
+# Adding tool to get current time
+r.add_from_mcp_server(server="uvx mcp-timeserver")  # Note: you can also add URLs
+
+# Adding tool to get current weather
+r.add_action(get_weather_info)
+
+# Adding tool to let agent stop execution
+r.add_action(stop_execution)
+
+async def execute_task(llm, task: str) -> str:
+    interactions = []
+    while True:
+        action = await llm.GetNextAction(task, interactions)
+        if result := is_result_available(action):
+            return result
+
+        result = r.run(action)
+        interactions.append(new_interaction(action, result))
+
+task = r.execute_task(llm, "State the current date along with avg temp between LA, NY, and Chicago in Fahrenheit.")
+```
+
+</details>
+
+<br>
+
+![BAML Agent execution trace in Jupyter showing LLM prompts and completions](https://github.com/user-attachments/assets/ea55c3e7-147d-41aa-99ce-40e4783f7818)
+
+To try it yourself, check out the notebook [Simple Agent Demonstration (notebooks/05_simple_agent_demo.ipynb)](notebooks/05_simple_agent_demo.ipynb).
 
 ## Running the Notebooks
 
