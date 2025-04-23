@@ -23,7 +23,7 @@ def _format_price_and_duration(
     cost_usd_per_thousand: float, duration_ms: int | None
 ) -> str:
     duration_sec = f"{duration_ms/1000:.2f}s" if duration_ms is not None else "N/A"
-    return f"{cost_usd_per_thousand:.2f}$/1k, {duration_sec}"
+    return f"{cost_usd_per_thousand:.2f}$/1k | {duration_sec}"
 
 
 def _get_call_duration_ms(call) -> int | None:
@@ -225,14 +225,14 @@ class JupyterBamlCollector(Generic[T]):
 
             formatted = self._format_log_messages(messages)
             if omit_cost_and_model:
-                label = f"Request: ({len(messages)} message{'s' if len(messages) > 1 else ''})"
+                label = f"Prompt | messages={len(messages)} |"
             else:
                 price_and_duration = _format_price_and_duration(
                     cost_usd_per_thousand, duration_ms
                 )
                 label = (
-                    f"Request: ({len(messages)} message{'s' if len(messages) > 1 else ''}) "
-                    f"{price_and_duration} ({cost['model_info']['model_name']})"
+                    f"Prompt | messages={len(messages)} | "
+                    f"{price_and_duration} | {cost['model_info']['model_name']}"
                 )
             ret[label] = formatted
         return ret
@@ -265,14 +265,14 @@ class JupyterBamlCollector(Generic[T]):
             price_and_duration = (
                 f" { _format_price_and_duration(cost_usd_per_thousand, duration_ms) }"
             )
-            model_name = f" ({cost['model_info']['model_name']})"
+            model_name = f" | {cost['model_info']['model_name']}"
         # Use summarizer output as label if available, else fallback to default
         if summary_label is not None:
-            label = f"Response: {summary_label}"
+            label = f"Completion | {summary_label}"
         else:
-            label = f"Completion{suffix}"
             if not omit_cost_and_model:
-                label += f"{price_and_duration}{model_name}"
+                suffix = f"{suffix}" + f"{price_and_duration}{model_name}"
+            label = f"Completion{' |'if suffix else ''}{suffix}"
         return label, str(raw_llm_response)
 
     async def display_calls(
@@ -281,10 +281,14 @@ class JupyterBamlCollector(Generic[T]):
         prompts: Literal["always_hide", "always_show", "show", "hide"] = "hide",
         completions: Literal["always_hide", "always_show", "show", "hide"] = "hide",
     ):
-        def get_key(i, k):
-            return f"Step {i} - {k}"
-
         logs = list(self.collector.logs)
+        show_step = len(logs) > 1
+
+        def get_key(i, k):
+            if show_step:
+                return f"{i} | {k}"
+            return k
+
         completion_button_coros = [
             (
                 self._get_completion_button(log.raw_llm_response, log=log)
@@ -311,55 +315,64 @@ class JupyterBamlCollector(Generic[T]):
                 hide_text_under_a_button(get_key(i, k), v, visibility=completions)
                 completion_idx += 1
 
+    # --- CORRECTED display_session METHOD ---
     async def display_session(self, root_name: str, *, show_depth=0):
         nested_buttons = {}
+        logs = list(self.collector.logs)  # Ensure it's a list for indexing
 
-        logs = self.collector.logs
-
-        # Prepare prompt buttons and gather completion button coroutines
-        completion_button_coros = []
-        prompt_buttons_list = []
-        for log in logs:
-            # Compute cost/model info for each call (side effect, not used here)
-            total_cost_usd_per_thousand = 0
-            all_models = set()
-            for call in log.calls:
-                if call.http_request is None:
-                    continue
-                request_body = call.http_request.body.json()
-                cost = self.cost_estimator.calculate_cost(
-                    request_body["model"],
-                    call.usage.input_tokens,
-                    call.usage.output_tokens,
-                )
-                cost_usd_per_thousand = cost["total_cost_usd"] * 1_000
-                total_cost_usd_per_thousand += cost_usd_per_thousand
-                all_models.add(cost["model_info"]["model_name"])
-            # Collect prompt buttons for this log
-            prompt_buttons = dict(
-                self._get_prompt_buttons(log.calls, omit_cost_and_model=False).items()
+        # --- Populate nested_buttons with unique keys ---
+        # Gather completion buttons first as they might involve async calls (summarizer)
+        completion_button_coros = [
+            self._get_completion_button(
+                log.raw_llm_response,
+                log=log,
+                omit_cost_and_model=True,  # Keep True as per original logic for this func
             )
-            prompt_buttons_list.append(prompt_buttons)
-            # Prepare coroutine for completion button
-            completion_button_coros.append(
-                self._get_completion_button(
-                    log.raw_llm_response, log=log, omit_cost_and_model=True
-                )
+            for log in logs
+        ]
+
+        # Gather results, handling potential exceptions during gather
+        completion_results = await asyncio.gather(
+            *completion_button_coros, return_exceptions=True
+        )
+
+        # Now iterate through logs *with their index* to build the final dict
+        for i, log in enumerate(logs, start=1):
+            log_prefix = f"{i} | "
+
+            # 1. Add Prompt Buttons for this log with unique keys
+            # Use omit_cost_and_model=False to show cost/model details on prompts here
+            prompt_buttons = self._get_prompt_buttons(
+                log.calls, omit_cost_and_model=False
             )
+            for k, v in prompt_buttons.items():
+                # Add index prefix for guaranteed uniqueness
+                unique_key = f"{log_prefix}{k}"
+                nested_buttons[unique_key] = v
 
-        # Gather all completion buttons concurrently
-        completion_buttons = await asyncio.gather(*completion_button_coros)
+            # 2. Add Completion Button for this log with unique key
+            completion_data = completion_results[i - 1]  # Use i-1 for 0-based index
 
-        # Update nested_buttons with prompt and completion buttons
-        for prompt_buttons, (k, v) in zip(
-            prompt_buttons_list, completion_buttons, strict=True
-        ):
-            nested_buttons.update(prompt_buttons)
-            nested_buttons[k] = v
+            if isinstance(completion_data, Exception):
+                raise completion_data
+
+            if completion_data is not None:  # Check if button generation succeeded
+                completion_k, completion_v = completion_data  # type: ignore
+                # Add index prefix for guaranteed uniqueness
+                unique_key = f"{log_prefix}{completion_k}"
+                nested_buttons[unique_key] = completion_v
+            else:
+                # Handle case where button generation returned None unexpectedly
+                nested_buttons[f"{log_prefix}Completion (Not Available)"] = (
+                    "Completion data could not be generated."
+                )
+
+        # --- Display using the populated nested_buttons ---
+        root_label = f"{root_name}, Cost: {self.format_total_cost()}"
         hide_text_under_a_button_nested(
-            f"{root_name}, Cost: {self.format_total_cost()}",
+            root_label,
             nested_buttons,
-            visibility="show",
+            visibility="hide",  # Default visibility for the nested structure
             hide_after_level=show_depth,
         )
 
@@ -387,22 +400,22 @@ class JupyterBamlCollector(Generic[T]):
                 all_models.add(cost["model_info"]["model_name"])
 
         duration_sec = f"{total_duration_ms/1000:.2f}s" if total_duration_ms else "N/A"
-        return f"{total_cost_usd_per_thousand:.2f}$/1k, {duration_sec} ({', '.join(all_models)})"
+        return f"{total_cost_usd_per_thousand:.2f}$/1k | {duration_sec} | {', '.join(all_models)}"
 
     @staticmethod
     def _get_suffix(
         action_count: int,
         tool_count: int,
     ) -> str:
-        action_part = f"action: {action_count}" if action_count else ""
-        tool_part = f"tool: {tool_count}" if tool_count else ""
+        action_part = f"actions={action_count}" if action_count else ""
+        tool_part = f"tools={tool_count}" if tool_count else ""
 
         if action_part and tool_part:
-            return f" ({action_part}, {tool_part})"
+            return f" | {action_part} | {tool_part})"
         if action_part:
-            return f" ({action_part})"
+            return f" | {action_part}"
         if tool_part:
-            return f" ({tool_part})"
+            return f" | {tool_part}"
         return ""
 
 
@@ -418,6 +431,10 @@ class JupyterBamlMonitor(Generic[T]):
         if self._collector is None:
             raise RuntimeError("JupyterTraceLLMCalls tracer has not been initialized.")
         return cast("T", self._collector.ai)
+
+    @property
+    def b(self) -> T:
+        return self.ai
 
     async def display_calls(
         self,
@@ -439,7 +456,7 @@ class JupyterBamlMonitor(Generic[T]):
         self._streamer.__enter__()
         self._collector = JupyterBamlCollector(
             self._ai,
-            stream_callback=self._streamer.show,
+            stream_callback=self._streamer.display(),
             intent_summarizer=self._summarizer,
         )
         return self

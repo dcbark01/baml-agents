@@ -30,6 +30,10 @@ Feedback is always welcome!
     - Discover how to leverage the Model Context Protocol (MCP) to easily plug-and-play pre-built 3rd party tools (like calculators, web search) into your BAML agents.
     - See `ActionRunner` in action, automatically discovering and integrating tools from MCP servers with minimal configuration.
     - Learn techniques to filter and select specific MCP tools to offer to the LLM, controlling the agent's capabilities precisely.
+4.  [Interactive BAML Development in Jupyter](notebooks/04_interactive_baml_jupyter.ipynb)
+    - See BAML's structured data generation stream _live_ into your Jupyter output cell as the LLM generates it.
+    - Interactively inspect the details: Use collapsible sections to view full LLM prompts and responses, optionally grouped by call or session, directly in the notebook.
+    - Chat with your agent: Interactive chat widget right in the notebook, allowing you to ask questions and see the agent's responses in real-time.
 
 ## Running the Notebooks
 

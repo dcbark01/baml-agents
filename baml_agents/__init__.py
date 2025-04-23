@@ -6,6 +6,7 @@ from baml_agents._agent_tools._utils._baml_utils import display_prompt
 from baml_agents._baml_clients._with_model import with_model
 from baml_agents._jupyter_baml._jupyter_baml import (
     JupyterBamlCollector,
+    JupyterBamlMonitor,
     JupyterOutputBox,
 )
 from baml_agents._project_utils._init_logging import init_logging
@@ -14,6 +15,7 @@ __all__ = [
     "Action",
     "ActionRunner",
     "JupyterBamlCollector",
+    "JupyterBamlMonitor",
     "JupyterOutputBox",
     "McpToolDefinition",
     "Result",
