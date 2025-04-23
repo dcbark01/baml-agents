@@ -11,7 +11,7 @@
 This repository shares useful patterns I use when working with BAML. The API is unstable and may change in future versions. Install with:
 
 ```bash
-pip install "baml‑agents>=0.8.0,<0.9.0"
+pip install "baml-agents>=0.8.0,<0.9.0"
 ```
 
 ## Contents
@@ -44,7 +44,7 @@ pip install "baml‑agents>=0.8.0,<0.9.0"
 > The code below is trimmed for brevity to **illustrate the core concepts**. Some function names or setup steps may differ slightly from the full notebook implementation for clarity in this example. The full, runnable code is available in the notebook <a href="notebooks/05_simple_agent_demo.ipynb">Simple Agent Demonstration (notebooks/05_simple_agent_demo.ipynb)</a>
 
 <details>
-  <summary>Click Here to show code for the example below</summary>
+  <summary>Show code for the example below</summary>
 
 ```python
 def get_weather_info(city: str):
@@ -53,19 +53,18 @@ def get_weather_info(city: str):
 def stop_execution(final_answer: str):
     return f"Final answer: {final_answer}"
 
-b = LLMClient("gpt-4.1-nano")
 r = ActionRunner() # Doing an action means using a tool
 
-# Adding tool to allow the agent to do math
+# Adding a tool to allow the agent to do math
 r.add_from_mcp_server(server="uvx mcp-server-calculator")
 
-# Adding tool to get current time
+# Adding a tool to get the current time
 r.add_from_mcp_server(server="uvx mcp-timeserver")  # Note: you can also add URLs
 
-# Adding tool to get current weather
+# Adding a tool to get the current weather
 r.add_action(get_weather_info)
 
-# Adding tool to let agent stop execution
+# Adding a tool to let the agent stop execution
 r.add_action(stop_execution)
 
 async def execute_task(llm, task: str) -> str:
@@ -78,7 +77,8 @@ async def execute_task(llm, task: str) -> str:
         result = r.run(action)
         interactions.append(new_interaction(action, result))
 
-task = r.execute_task(b, "State the current date along with avg temp between LA, NY, and Chicago in Fahrenheit.")
+llm = LLMClient("gpt-4.1-nano")
+task = r.execute_task(llm, "State the current date along with avg temp between LA, NY, and Chicago in Fahrenheit.")
 ```
 
 </details>
@@ -95,5 +95,5 @@ To run code from the `notebooks/` folder, you'll first need to:
 
 - Install the [`uv` python package manager](https://docs.astral.sh/uv/).
 - Install all dependencies: `uv sync --dev`
-- Generates necessary BAML code: `uv run baml-cli generate`
+- Generate necessary BAML code: `uv run baml-cli generate`
   - Alternatively, you can use the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=Boundary.baml-extension) to do it automatically every time you edit a `.baml` file.
