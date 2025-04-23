@@ -78,7 +78,7 @@ async def execute_task(llm, task: str) -> str:
         result = r.run(action)
         interactions.append(new_interaction(action, result))
 
-task = r.execute_task(llm, "State the current date along with avg temp between LA, NY, and Chicago in Fahrenheit.")
+task = r.execute_task(b, "State the current date along with avg temp between LA, NY, and Chicago in Fahrenheit.")
 ```
 
 </details>
