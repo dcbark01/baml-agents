@@ -44,7 +44,7 @@ pip install "baml‑agents>=0.8.0,<0.9.0"
 > The code below is trimmed for brevity to **illustrate the core concepts**. Some function names or setup steps may differ slightly from the full notebook implementation for clarity in this example. The full, runnable code is available in the notebook <a href="notebooks/05_simple_agent_demo.ipynb">Simple Agent Demonstration (notebooks/05_simple_agent_demo.ipynb)</a>
 
 <details>
-  <summary>Show code for the example below</summary>
+  <summary>Click Here to show code for the example below</summary>
 
 ```python
 def get_weather_info(city: str):
