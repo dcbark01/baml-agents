@@ -11,7 +11,7 @@
 This repository shares useful patterns I use when working with BAML. The API is unstable and may change in future versions. Install with:
 
 ```bash
-pip install "baml‑agents>=0.6.0,<0.7.0"
+pip install "baml‑agents>=0.7.0,<0.8.0"
 ```
 
 ## Contents
