@@ -6,10 +6,9 @@ import shlex
 import subprocess
 import threading
 from collections.abc import Callable, Sequence
-from itertools import chain
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 from copy import deepcopy
+from pathlib import Path
+from typing import Any, Generic, TypeVar, cast
 
 from baml_py.type_builder import TypeBuilder
 from loguru import logger

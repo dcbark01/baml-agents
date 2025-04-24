@@ -1,27 +1,20 @@
 import os
 from typing import TypeVar
 
-from baml_py import ClientRegistry
+from ._with_client import with_client
 
 T = TypeVar("T")
 
 
 def with_model(b: T, model: str) -> T:
-    """
-    Attach a ClientRegistry with a specified or default model to an object supporting with_options.
-    """
-    cr = ClientRegistry()
+    provider = "openai"
+    api_key = os.environ.get("OPENAI_API_KEY")
+    base_url = os.environ.get("OPENAI_API_BASE")
+
     options = {
         "model": model,
-        "api_key": os.environ["OPENAI_API_KEY"],
+        "api_key": api_key,
     }
-    base_url = os.environ.get("OPENAI_API_BASE")
     if base_url:
         options["base_url"] = base_url
-    cr.add_llm_client(
-        name=model,
-        provider="openai",
-        options=options,
-    )
-    cr.set_primary(model)
-    return b.with_options(client_registry=cr)  # type: ignore
+    return with_client(b, provider=provider, options=options)  # type: ignore

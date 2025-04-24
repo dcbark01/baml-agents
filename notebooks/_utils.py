@@ -10,13 +10,9 @@ from baml_agents._agent_tools._action import (
 )  # Use specific types for Action and Result if known
 
 
-def print_result(result):
-    completion = result.calls[0].http_response.body.json()["choices"][0]["message"][  # type: ignore
-        "content"
-    ]
+def print_used_model(result):
     model = result.calls[0].http_response.body.json()["model"]  # type: ignore
-    clean_completion = re.sub(r"\s+", "", completion)
-    print(f"Model: {model}\nReturned: {clean_completion}")
+    print(f"Used model: {model}")
 
 
 def city_to_number(city: str, min_value: int, max_value: int) -> int:
