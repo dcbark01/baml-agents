@@ -1,9 +1,9 @@
 # baml‑agents
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-success.svg)](https://opensource.org/licenses/MIT)
-<a href="https://badge.fury.io/py/baml-agents"><img src="https://badge.fury.io/py/baml-agents.svg?0.9.0" alt="PyPI version" /></a>
-[![status-prototype](https://img.shields.io/badge/status-prototype-darkgrey.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
-<a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
+[![License: MIT](https://img.shields.io/badge/license-MIT-success.svg?style=flat)](https://opensource.org/licenses/MIT)
+<a href="https://badge.fury.io/py/baml-agents"><img src="https://badge.fury.io/py/baml-agents.svg?style=flat&refresh=0.9.0" alt="PyPI version" /></a>
+[![status-prototype](https://img.shields.io/badge/status-prototype-darkgrey.svg?style=flat)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
+<a href="https://github.com/astral-sh/ruff?style=flat"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
 
 **Building Agents with [BAML](https://www.boundaryml.com/) for structured generation with LLMs, [MCP Tools](https://modelcontextprotocol.io/docs/concepts/tools), and [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) principles**
 
@@ -13,7 +13,14 @@ This repository shares useful patterns I use when working with BAML. The API is 
 pip install "baml-agents>=0.9.0,<0.10.0"
 ```
 
-*Disclaimer: This project (`baml-agents`) is maintained independently by [Elijas](https://github.com/Elijas) and is not affiliated with the official BAML project.*
+Found this useful? Star the repo on GitHub to show support and follow updates. Also, find me on Discord if you have questions or would like to join a discussion!
+
+![GitHub Repo stars](https://img.shields.io/github/stars/elijas/baml-agents?style=flat&color=f0f0f0&labelColor=white&logo=github&logoColor=black)
+&nbsp;<a href="https://discord.gg/hCppPqm6"><img alt="Discord server invite" src="https://img.shields.io/discord/1119368998161752075?logo=discord&logoColor=white&style=flat&color=f0f0f0&labelColor=7289da" height="20"></a>
+
+## Disclaimer
+
+This project (`baml-agents`) is maintained independently by [Elijas](https://github.com/Elijas) and is not affiliated with the official BAML project.
 
 ## Contents
 
