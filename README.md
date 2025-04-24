@@ -20,7 +20,7 @@ Found this useful? Star the repo on GitHub to show support and follow updates. A
 
 ## Disclaimer
 
-This project (`baml-agents`) is maintained independently by [Elijas](https://github.com/Elijas) and is not affiliated with the official BAML project.
+This project (`baml-agents`) is maintained independently by Elijas and is not affiliated with the official BAML project.
 
 ## Contents
 
