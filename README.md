@@ -5,7 +5,7 @@
 [![status-prototype](https://img.shields.io/badge/status-prototype-darkgrey.svg?style=flat)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
 <a href="https://github.com/astral-sh/ruff?style=flat"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
 
-**Building Agents with LLM structured generation ([BAML](https://www.boundaryml.com/)), [MCP Tools](https://modelcontextprotocol.io/docs/concepts/tools), and [12-Factor Agents](https://github.com/humanlayer/12-factor-agents)**
+**Building Agents with LLM structured generation ([BAML](https://www.boundaryml.com/)), [MCP Tools](https://modelcontextprotocol.io/docs/concepts/tools), and [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) principles.**
 
 This repository shares useful patterns I use when working with BAML. The API is unstable and may change in future versions. Install with:
 
