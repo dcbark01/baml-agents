@@ -57,12 +57,11 @@ tasks:
     cmds:
       - task: ensure-clean-working-tree
       - uv run pytest -q
-      - devtools/generate_project_readme.py `bump-my-version show --increment {{.type}} new_version`
-      - git add README.md 
       - task lint
+      - devtools/generate_project_readme.py `bump-my-version show --increment {{.type}} new_version`
+      - git add README.md
       - uv run bump-my-version bump {{.type}}
     desc: Base bump task (internal)
-
   bump:patch:
     cmds:
       - task: bump
@@ -70,7 +69,6 @@ tasks:
           type: patch
     desc: Bump patch version [Usage] task bp -- -m "bump version"
     aliases: [bp]
-
   bump:minor:
     cmds:
       - task: bump
