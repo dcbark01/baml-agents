@@ -52,7 +52,7 @@ tag_name = "v{new_version}"
 tag_message = "Bump version: {current_version} → {new_version}"
 allow_dirty = true
 commit = true
-message = "Bump version: {current_version} → {new_version}"
+message = "chore(bump_version): {current_version} → {new_version}"
 moveable_tags = []
 commit_args = ""
 setup_hooks = []
@@ -203,4 +203,3 @@ target-version = "py312"
     "T201",    # print() statement found
     "G004",    # Checks for uses of f-strings to format logging messages.
 ]
-
