@@ -10,7 +10,7 @@
 This repository shares useful patterns I use when working with BAML. The API is unstable and may change in future versions. Install with:
 
 ```bash
-pip install "baml-agents>=0.16.11,<0.17.0"
+pip install "baml-agents>=0.16.12,<0.17.0"
 ```
 
 Found this useful? Star the repo on GitHub to show support and follow updates. Also, find me on Discord if you have questions or would like to join a discussion!
