@@ -1,5 +1,7 @@
 version: '3'
 
+dotenv: ['.env']
+
 tasks:
   ##############################
   ### TESTS
@@ -50,7 +52,7 @@ tasks:
     internal: true
     cmds:
       - if git diff --exit-code > /dev/null 2>&1 && git diff --cached --exit-code > /dev/null 2>&1; then :; else echo "Changes detected in the working tree or index. Please commit or stash them before proceeding."; exit 1; fi
-  bump:
+  publish:
     internal: true
     vars:
       type: '{{.CLI_ARGS | default "patch"}}'
@@ -61,18 +63,19 @@ tasks:
       - devtools/generate_project_readme.py `bump-my-version show --increment {{.type}} new_version`
       - git add README.md
       - uv run bump-my-version bump {{.type}}
-    desc: Base bump task (internal)
-  bump:patch:
+      - uv publish --token {{.PYPI_TOKEN}}
+    desc: Base publish task (internal)
+  publish:patch:
     cmds:
-      - task: bump
+      - task: publish
         vars:
           type: patch
-    desc: Bump patch version [Usage] task bp -- -m "bump version"
-    aliases: [bp]
-  bump:minor:
+    desc: Publish patch version update [Usage] task pp
+    aliases: [pp]
+  publish:minor:
     cmds:
-      - task: bump
+      - task: publish
         vars:
           type: minor
-    desc: Bump minor version [Usage] task bm -- -m "bump version"
-    aliases: [bm]
+    desc: Publish minor version update [Usage] task pm
+    aliases: [om]
