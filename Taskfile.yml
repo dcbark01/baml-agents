@@ -71,7 +71,7 @@ tasks:
       - rm -rf dist
       - uv build
       - uv publish
-      # Upload to Github, uploading to Github AFTER PyPI allows for the shields.io badge to be cached to the accurate pypi version
+      # Upload to Github, uploading to Github after PyPI allows for the shields.io badge to be cached to the accurate pypi version
       - git push
     desc: Base publish task (internal)
   publish:patch:
