@@ -67,11 +67,12 @@ tasks:
       - uv run devtools/generate_project_readme.py `bump-my-version show --increment {{.type}} new_version`
       - git add README.md
       - uv run bump-my-version bump {{.type}}
-      # Upload to Github and PyPI
-      - git push
+      # Upload to PyPI
       - rm -rf dist
       - uv build
       - uv publish
+      # Upload to Github, uploading to Github AFTER PyPI allows for the shields.io badge to be cached to the accurate pypi version
+      - git push
     desc: Base publish task (internal)
   publish:patch:
     cmds:
