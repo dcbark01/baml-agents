@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 """
 Command line wrapper to run `uv publish` using default credentials from
 your `~/.pypirc`. All extra arguments supplied on the command line are
@@ -66,9 +65,10 @@ def main() -> int:
         if url and opts:
             opts.append(f"--publish-url={url}")
 
-    res = subprocess.run(
-        ["uv", "publish", *opts, *rest], check=True
-    )  # noqa: S603, S607
+    res = subprocess.run(  # noqa: S603
+        ["uv", "publish", *opts, *rest],  # noqa: S607
+        check=True,
+    )
     return res.returncode
 
 

@@ -33,6 +33,7 @@ tasks:
   ##############################
   lint:
     cmds:
+      - bash -c "$(curl -fsSL https://gist.githubusercontent.com/Elijas/ce4480d070d4726fe7eb1863d1afd58d/raw/657b0bfea2b660ee3b0938c79f53418a03229cf3/init_generator.sh)"
       - uv run ruff check --fix
     desc: Run Ruff linter in watch mode with auto-fix
     aliases: [l]
@@ -47,13 +48,16 @@ tasks:
   docs:
     cmds:
       - devtools/generate_project_readme.py
-    desc: Run MkDocs server
+      - git add README.md
+    desc: Generate project README
     aliases: [d]
   ##############################
   ### DOCS
   ##############################
-  publish:minor:
+  publish:
     cmds:
-      - uv run bump2version --allow-dirty --no-tag --no-commit --dry-run minor
-    desc: Bump version to next minor version
-    aliases: [pm]
+      - uv run pytest -q
+      - task lint docs
+      - uv run bump-my-version bump {{.CLI_ARGS}}
+    desc: Bump version and publish to PyPI. [Usage] task p -- minor -m "bump version"
+    aliases: [p]
