@@ -67,7 +67,7 @@ tasks:
       - git push
       - rm -rf dist
       - uv build
-      - uv publish --token {{.PYPI_TOKEN}}
+      - uv publish
     desc: Base publish task (internal)
   publish:patch:
     cmds:
