@@ -23,3 +23,4 @@ def display_prompt(request):
         get_prompt(request).replace("<", "‹").replace(">", "›")  # noqa: RUF001
     )
     print(escaped_prompt)  # noqa: T201
+

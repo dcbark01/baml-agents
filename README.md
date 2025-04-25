@@ -105,3 +105,4 @@ To run code from the `notebooks/` folder, you'll first need to:
 - Install all dependencies: `uv sync --dev`
 - Generate necessary BAML code: `uv run baml-cli generate`
   - Alternatively, you can use the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=Boundary.baml-extension) to do it automatically every time you edit a `.baml` file.
+

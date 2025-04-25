@@ -1081,3 +1081,4 @@ class UnexpectedTypeError(JsonSchemaToBamlModelError):
 
 class RefResolutionError(JsonSchemaToBamlModelError):
     """Raised when a $ref cannot be resolved."""
+

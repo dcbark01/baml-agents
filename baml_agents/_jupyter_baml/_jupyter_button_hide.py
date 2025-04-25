@@ -128,3 +128,4 @@ def hide_text_under_a_button_nested(
 
     nested_content = _build_nested_html(contents)
     _hide_html_under_a_button(button_title, nested_content, visibility=visibility)
+

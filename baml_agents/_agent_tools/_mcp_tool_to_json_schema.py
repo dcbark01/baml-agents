@@ -25,3 +25,4 @@ def mcp_tool_to_json_schema(
     schema["properties"] = props
     schema["required"] = (*schema.get("required", []), baml_tool_id_field)
     return schema
+

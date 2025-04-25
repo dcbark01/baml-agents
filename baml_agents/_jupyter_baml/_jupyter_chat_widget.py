@@ -287,3 +287,4 @@ class JupyterChatWidget:
 
     def _clear_chat(self):
         self.output.clear_output()
+

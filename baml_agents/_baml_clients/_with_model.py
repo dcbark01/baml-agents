@@ -18,3 +18,4 @@ def with_model(b: T, model: str) -> T:
     if base_url:
         options["base_url"] = base_url
     return with_client(b, provider=provider, options=options)  # type: ignore
+

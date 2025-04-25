@@ -178,3 +178,4 @@ def init_logging(
     formatter = _LogFormatter(root_path, working_dir, color_config=color_config)
     logger.remove()
     _add_loggers(level, per_package, formatter)
+

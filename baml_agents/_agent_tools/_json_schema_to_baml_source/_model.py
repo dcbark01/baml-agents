@@ -201,3 +201,4 @@ class BamlEnumModel:
     description: str | None = None
     alias: str | None = None  # The original JSON schema title if different
     is_dynamic: bool = False  # Enums are typically not dynamic
+

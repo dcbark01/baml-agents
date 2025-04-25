@@ -16,3 +16,4 @@ test t {
     functions [InteractiveBamlJupyter_WriteShortStory]
     args {}
 }
+

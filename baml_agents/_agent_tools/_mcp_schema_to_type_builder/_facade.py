@@ -21,3 +21,4 @@ def add_available_actions(output_class: str, tools, tb, cfg=None):
         tools=tools,
     )
     return tb
+

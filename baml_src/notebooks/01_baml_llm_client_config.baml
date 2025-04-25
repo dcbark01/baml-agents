@@ -15,3 +15,4 @@ test t {
     functions [LLMClientConfig_ExtractCity]
     args {text "Hi, I'm John from LA"}
 }
+

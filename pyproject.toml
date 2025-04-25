@@ -203,3 +203,4 @@ target-version = "py312"
     "T201",    # print() statement found
     "G004",    # Checks for uses of f-strings to format logging messages.
 ]
+

@@ -61,3 +61,4 @@ class InteractionHistory:
     def __len__(self) -> int:
         """Returns the number of interactions recorded."""
         return len(self.interactions)
+

@@ -7,3 +7,4 @@ def merge_dicts_no_overlap(a: dict[Any, Any], b: dict[Any, Any]) -> dict[Any, An
     if overlap:
         raise KeyError(f"Collision on keys: {overlap}")
     return {**a, **b}
+

@@ -158,3 +158,4 @@ class JsonSchemaToBamlConverter(AbstractJsonSchemaToBamlConverter):
         ft = self._parse(node, tb, cache, root_schema)
         cache[ref] = ft
         return ft
+

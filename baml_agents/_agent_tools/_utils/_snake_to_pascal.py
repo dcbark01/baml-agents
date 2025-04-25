@@ -24,3 +24,4 @@ def pascal_to_snake(name: str) -> str:
             chars.append("_")
         chars.append(c.lower())
     return "".join(chars)
+

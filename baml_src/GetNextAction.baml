@@ -31,3 +31,4 @@ class Result {
     content string
     error bool
 }
+

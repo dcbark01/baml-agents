@@ -40,3 +40,4 @@ class ToolToBamlType(AbstractToolToBamlType):
     ) -> FieldType:
         schema = mcp_tool_to_json_schema(tool, tb, baml_tool_id_field)
         return self._converter.convert(schema, tb)
+

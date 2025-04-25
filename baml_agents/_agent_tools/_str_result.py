@@ -17,3 +17,4 @@ class Result(BaseModel):
         if item["type"] != "text":
             raise ValueError(f"Expected text type, got {item['type']}")
         return cls(content=item["text"], error=mcp_result_schema["isError"])
+

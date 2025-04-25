@@ -288,3 +288,4 @@ def _run_cli_command(command: str | Sequence[str], *, env: dict | None = None) -
     if result.returncode != 0:
         raise RuntimeError(f"Command failed with exit code {result.returncode}")
     return result.stdout.strip()
+

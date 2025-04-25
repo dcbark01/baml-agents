@@ -16,3 +16,4 @@ class AbstractJsonSchemaToBamlConverter(ABC):
         **_,
     ) -> FieldType:
         """Parse the entire root schema into a FieldType."""
+

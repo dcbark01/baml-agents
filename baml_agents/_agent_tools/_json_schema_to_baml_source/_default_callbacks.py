@@ -90,3 +90,4 @@ class DefaultAlias(AliasCallback):
         root_class_schema: dict[str, Any],  # noqa: ARG002
     ) -> str | None:
         return None
+

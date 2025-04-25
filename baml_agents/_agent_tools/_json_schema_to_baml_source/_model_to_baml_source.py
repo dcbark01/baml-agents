@@ -172,3 +172,4 @@ class BamlModelToBamlSourceConverter(BamlSourceGenerator[T]):
 
         # Join parts with double newlines for separation between definitions
         return "\n".join(baml_parts)
+

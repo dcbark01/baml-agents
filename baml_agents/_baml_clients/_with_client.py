@@ -23,3 +23,4 @@ def with_client(
     )
     cr.set_primary(name)
     return b.with_options(client_registry=cr)  # type: ignore
+

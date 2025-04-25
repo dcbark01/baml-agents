@@ -139,3 +139,4 @@ class AliasCallback(Protocol):
         class_schema: dict[str, Any],
         root_class_schema: dict[str, Any],
     ) -> str | None: ...
+

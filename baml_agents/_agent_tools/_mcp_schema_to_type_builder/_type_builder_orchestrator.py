@@ -41,3 +41,4 @@ class TypeBuilderOrchestrator:
         union = tb.union(baml_types)
         output_class.add_property(self._prompt_cfg.tools_field, union)
         return tb
+

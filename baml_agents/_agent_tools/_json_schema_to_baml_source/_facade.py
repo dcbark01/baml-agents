@@ -24,3 +24,4 @@ def json_schema_to_baml_source(
     model_to_source = BamlModelToBamlSourceConverter(baml_models)
     baml_source = model_to_source.generate()
     return baml_source
+

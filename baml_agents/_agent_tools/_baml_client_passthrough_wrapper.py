@@ -136,3 +136,4 @@ class PassthroughWrapper:
     def _get_baml_function_return_type_name(self, name):
         baml_client = getattr(self, "_parent_target", None) or self
         return getattr(baml_client, name).__annotations__["return"].__name__
+

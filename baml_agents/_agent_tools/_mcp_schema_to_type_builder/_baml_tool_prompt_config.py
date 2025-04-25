@@ -11,3 +11,4 @@ class BamlToolPromptConfig:
         default="chosen_action",
         metadata={"description": "Field name for tools collection"},
     )
+

@@ -514,3 +514,4 @@ class JupyterBamlMonitor(Generic[T]):
         if self._streamer is not None:
             self._streamer.__exit__(exc_type, exc_val, exc_tb)
             self._streamer = None
+

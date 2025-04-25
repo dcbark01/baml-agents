@@ -18,3 +18,4 @@ def get_root_path():
             "Could not find pyproject.toml in current or parent directories"
         )
     return root_path
+

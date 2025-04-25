@@ -16,3 +16,4 @@ def sole(collection):
     if len(items) != 1:
         raise ValueError(f"Expected exactly one element, found {len(items)}")
     return items[0]
+
