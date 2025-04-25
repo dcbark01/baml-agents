@@ -59,6 +59,7 @@ commit_args = ""
 setup_hooks = []
 pre_commit_hooks = []
 post_commit_hooks = []
+include_in_commit = ["README.md"]
 
 [[tool.bumpversion.files]]
 filename = "baml_agents/__init__.py"
