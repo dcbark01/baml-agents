@@ -45,21 +45,36 @@ tasks:
   ##############################
   ### PUBLISH
   ##############################
+  ensure-clean-working-tree: # Ensure no changes in the working tree or index, abort if any.
+    silent: true
+    internal: true
+    cmds:
+      - if git diff --exit-code > /dev/null 2>&1 && git diff --cached --exit-code > /dev/null 2>&1; then :; else echo "Changes detected in the working tree or index. Please commit or stash them before proceeding."; exit 1; fi
+  bump:
+    internal: true
+    vars:
+      type: '{{.CLI_ARGS | default "patch"}}'
+    cmds:
+      - task: ensure-clean-working-tree
+      - uv run pytest -q
+      - devtools/generate_project_readme.py `bump-my-version show --increment {{.type}} new_version`
+      - git add README.md 
+      - task lint
+      - uv run bump-my-version bump {{.type}}
+    desc: Base bump task (internal)
+
   bump:patch:
     cmds:
-      - uv run pytest -q
-      - devtools/generate_project_readme.py `bump-my-version show --increment patch new_version`
-      - git add README.md 
-      - task lint
-      - uv run bump-my-version bump patch
-    desc: Bump version [Usage] task bp -- -m "bump version"
+      - task: bump
+        vars:
+          type: patch
+    desc: Bump patch version [Usage] task bp -- -m "bump version"
     aliases: [bp]
+
   bump:minor:
     cmds:
-      - uv run pytest -q
-      - devtools/generate_project_readme.py `bump-my-version show --increment minor new_version`
-      - git add README.md 
-      - task lint
-      - uv run bump-my-version bump minor
-    desc: Bump version [Usage] task bm -- -m "bump version"
+      - task: bump
+        vars:
+          type: minor
+    desc: Bump minor version [Usage] task bm -- -m "bump version"
     aliases: [bm]
