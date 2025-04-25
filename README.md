@@ -1,7 +1,7 @@
 # baml‑agents
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-success.svg?style=flat)](https://opensource.org/licenses/MIT)
-<a href="https://pypi.org/project/baml-agents"><img src="https://img.shields.io/badge/0.16.14-version?color=active&style=flat&label=version" alt="PyPI version" /></a>
+<a href="https://pypi.org/project/baml-agents"><img src="https://img.shields.io/badge/0.16.15-version?color=active&style=flat&label=version" alt="PyPI version" /></a>
 [![status-prototype](https://img.shields.io/badge/status-prototype-darkgrey.svg?style=flat)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
 <a href="https://github.com/astral-sh/ruff?style=flat"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
 
@@ -10,7 +10,7 @@
 This repository shares useful patterns I use when working with BAML. The API is unstable and may change in future versions. Install with:
 
 ```bash
-pip install "baml-agents>=0.16.14,<0.17.0"
+pip install "baml-agents>=0.16.15,<0.17.0"
 ```
 
 Found this useful? Star the repo on GitHub to show support and follow updates. Also, find me on Discord if you have questions or would like to join a discussion!
