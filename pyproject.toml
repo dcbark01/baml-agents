@@ -51,7 +51,7 @@ tag = false
 sign_tags = false
 tag_name = "v{new_version}"
 tag_message = "Bump version: {current_version} → {new_version}"
-allow_dirty = false
+allow_dirty = true
 commit = true
 message = "Bump version: {current_version} → {new_version}"
 moveable_tags = []
@@ -59,7 +59,6 @@ commit_args = ""
 setup_hooks = []
 pre_commit_hooks = []
 post_commit_hooks = []
-include_in_commit = ["README.md"]
 
 [[tool.bumpversion.files]]
 filename = "baml_agents/__init__.py"
