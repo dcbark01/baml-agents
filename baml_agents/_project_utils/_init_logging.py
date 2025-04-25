@@ -1,6 +1,7 @@
 import os
 import pathlib
 import sys
+from collections import defaultdict
 from collections.abc import Mapping
 from dataclasses import dataclass
 
@@ -112,19 +113,68 @@ class _LogFormatter:
         return f'{"".join(parts)}\n'
 
 
+def _group_per_package(per_package):
+    grouped_per_package = {}
+    if per_package:
+        grouped = defaultdict(list)
+        for package, value in per_package.items():
+            grouped[value].append(package)
+        # Sort the module lists for each value
+        grouped_per_package = {
+            value: sorted(modules, reverse=True)
+            for value, modules in sorted(
+                grouped.items(), key=lambda item: item[0], reverse=True
+            )
+        }
+    return grouped_per_package
+
+
+def _add_loggers(level, per_package, formatter):
+    # The goal is to ensure that for each (level, modules) group, only those modules get that level,
+    # and all other log records (not matching any module in any group) get the default level.
+    # This is a "1 vs all" filter per group.
+
+    grouped_per_package = _group_per_package(per_package)
+
+    # Track all modules in all groups for the "all others" filter
+    all_grouped_modules = set()
+    for modules in grouped_per_package.values():
+        all_grouped_modules.update(modules)
+
+    # Add a logger for each group: only log records whose name starts with one of the group's modules
+    for value, modules in grouped_per_package.items():
+        module_prefixes = tuple(modules)
+        logger.add(
+            sys.stdout,
+            filter=lambda record, module_prefixes=module_prefixes: record[
+                "name"
+            ].startswith(  # type: ignore
+                module_prefixes
+            ),
+            format=formatter,
+            level=value,
+        )
+
+    # Add a logger for all other modules (not in any group)
+    logger.add(
+        sys.stdout,
+        filter=lambda record: not record["name"].startswith(tuple(all_grouped_modules)),  # type: ignore
+        format=formatter,
+        level=level,
+    )
+
+
 def init_logging(
+    *,
     level: str | None = None,
+    per_package: dict[str, str] | None = None,
     root_path=None,
-    working_directory=None,
+    working_dir=None,
     color_config: LogColorConfig | None = None,
 ):
     root_path = root_path or get_root_path()
     color_config = color_config or LogColorConfig()
-    working_directory = working_directory or pathlib.Path.cwd()
+    working_dir = working_dir or pathlib.Path.cwd()
+    formatter = _LogFormatter(root_path, working_dir, color_config=color_config)
     logger.remove()
-    formatter = _LogFormatter(root_path, working_directory, color_config=color_config)
-    logger.add(
-        sys.stdout,
-        format=formatter,
-        level=level or "TRACE",
-    )
+    _add_loggers(level, per_package, formatter)

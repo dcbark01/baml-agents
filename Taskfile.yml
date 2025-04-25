@@ -41,3 +41,19 @@ tasks:
       - uv run ruff check --fix --watch
     desc: Run Ruff linter in watch mode with auto-fix
     aliases: [lw]
+  ##############################
+  ### DOCS
+  ##############################
+  docs:
+    cmds:
+      - devtools/generate_project_readme.py
+    desc: Run MkDocs server
+    aliases: [d]
+  ##############################
+  ### DOCS
+  ##############################
+  publish:minor:
+    cmds:
+      - uv run bump2version --allow-dirty --no-tag --no-commit --dry-run minor
+    desc: Bump version to next minor version
+    aliases: [pm]
