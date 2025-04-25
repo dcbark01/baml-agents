@@ -60,7 +60,7 @@ tasks:
       - task: ensure-clean-working-tree
       - uv run pytest -q
       - task lint
-      - devtools/generate_project_readme.py `bump-my-version show --increment {{.type}} new_version`
+      - uv run devtools/generate_project_readme.py `bump-my-version show --increment {{.type}} new_version`
       - git add README.md
       - uv run bump-my-version bump {{.type}}
       - rm -rf dist
