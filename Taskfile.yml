@@ -63,6 +63,8 @@ tasks:
       - devtools/generate_project_readme.py `bump-my-version show --increment {{.type}} new_version`
       - git add README.md
       - uv run bump-my-version bump {{.type}}
+      - rm -rf dist
+      - uv build
       - uv publish --token {{.PYPI_TOKEN}}
     desc: Base publish task (internal)
   publish:patch:
