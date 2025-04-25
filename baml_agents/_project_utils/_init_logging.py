@@ -172,6 +172,7 @@ def init_logging(
     working_dir=None,
     color_config: LogColorConfig | None = None,
 ):
+    level = level or "INFO"
     root_path = root_path or get_root_path()
     color_config = color_config or LogColorConfig()
     working_dir = working_dir or pathlib.Path.cwd()

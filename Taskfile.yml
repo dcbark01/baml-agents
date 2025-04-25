@@ -52,10 +52,11 @@ tasks:
     internal: true
     cmds:
       - if git diff --exit-code > /dev/null 2>&1 && git diff --cached --exit-code > /dev/null 2>&1; then :; else echo "Changes detected in the working tree or index. Please commit or stash them before proceeding."; exit 1; fi
-  publish:
+  publish:internal:
     internal: true
     vars:
       type: '{{.CLI_ARGS | default "patch"}}'
+      commit_message: ""
     cmds:
       # Check git state
       - task: ensure-clean-working-tree
@@ -66,7 +67,8 @@ tasks:
       # Bump version
       - uv run devtools/bump_readme_version.py `bump-my-version show --increment {{.type}} new_version`
       - git add README.md
-      - uv run bump-my-version bump {{.type}}
+      - uv run bump-my-version bump {{.type}} \
+          {{if .commit_message}}-m "{{.commit_message}}"{{end}}
       # Upload to PyPI
       - rm -rf dist
       - uv build
@@ -75,16 +77,22 @@ tasks:
       - git push
     desc: Base publish task (internal)
   publish:patch:
+    vars:
+      m: '{{.m}}' # Inherit m from global or command line
     cmds:
-      - task: publish
+      - task: publish:internal
         vars:
           type: patch
-    desc: Publish patch version update [Usage] task pp
+          commit_message: "{{.m}}"
+    desc: Publish patch version update [Usage] pp [Usage] pp m="commit message"
     aliases: [pp]
   publish:minor:
+    vars:
+      m: '{{.m}}' # Inherit m from global or command line
     cmds:
-      - task: publish
+      - task: publish:internal
         vars:
           type: minor
-    desc: Publish minor version update [Usage] task pm
-    aliases: [om]
+          commit_message: "{{.m}}"
+    desc: Publish minor version update [Usage] pm [Usage] pm m="commit message"
+    aliases: [pm]
