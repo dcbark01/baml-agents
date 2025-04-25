@@ -16,7 +16,7 @@ from baml_agents._jupyter_baml._jupyter_chat_widget import (
 )
 from baml_agents._project_utils._init_logging import init_logging
 
-__version__ = "0.14.10"
+__version__ = "0.14.11"
 __all__ = [
     "Action",
     "ActionRunner",
