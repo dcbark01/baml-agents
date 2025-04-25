@@ -58,11 +58,13 @@ tasks:
       type: '{{.CLI_ARGS | default "patch"}}'
     cmds:
       - task: ensure-clean-working-tree
+      - git pull
       - uv run pytest -q
       - task lint
       - uv run devtools/generate_project_readme.py `bump-my-version show --increment {{.type}} new_version`
       - git add README.md
       - uv run bump-my-version bump {{.type}}
+      - git push
       - rm -rf dist
       - uv build
       - uv publish --token {{.PYPI_TOKEN}}
