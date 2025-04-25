@@ -1,7 +1,7 @@
 # baml‑agents
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-success.svg?style=flat)](https://opensource.org/licenses/MIT)
-<a href="https://badge.fury.io/py/baml-agents"><img src="https://badge.fury.io/py/baml-agents.svg?style=flat&refresh=0.16.11" alt="PyPI version" /></a>
+<a href="https://pypi.org/project/baml-agents"><img src="https://img.shields.io/pypi/v/baml-agents?color=active&label=version" alt="PyPI version" /></a>
 [![status-prototype](https://img.shields.io/badge/status-prototype-darkgrey.svg?style=flat)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
 <a href="https://github.com/astral-sh/ruff?style=flat"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
 
