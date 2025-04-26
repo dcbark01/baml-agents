@@ -14,6 +14,7 @@ from baml_agents._jupyter_baml._jupyter_chat_widget import (
     ChatMessage,
     JupyterChatWidget,
 )
+from baml_agents._project_utils._get_root_path import get_root_path
 from baml_agents._project_utils._init_logging import init_logging
 
 __version__ = "0.16.18"
@@ -28,8 +29,8 @@ __all__ = [
     "McpToolDefinition",
     "Result",
     "display_prompt",
+    "get_root_path",
     "init_logging",
     "with_client",
     "with_model",
 ]
-

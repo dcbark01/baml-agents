@@ -24,7 +24,6 @@ dev = [
     "ipykernel>=6.29.5",
     "ipywidgets>=8.1.6",
     "jupyter-black>=0.4.0",
-    "pre-commit>=4.2.0",
     "pytest>=8.3.5",
     "pytest-cov>=6.1.1",
     "pytest-watch>=4.2.0",
@@ -124,22 +123,22 @@ lint.ignore = [
     "TRY003", # Avoid specifying long messages outside the exception class
 
     # --- Docstrings & Type Annotations ---
-    "D100", # Missing docstring in public module
-    "D101", # Missing docstring in public class
-    "D102", # Missing docstring in public method
-    "D103", # Missing docstring in public function
-    "D104", # Missing docstring in public package
-    "D105", # Missing docstring in magic method
-    "D107", # Missing docstring in `__init__`
-    "D200", # One-line docstring should fit within a single line
-    "D203", # 1 blank line required before class docstring
-    "D205", # 1 blank line required between summary line and description
-    "D212", # Multi-line docstring summary should start at the first line
-    # "D400",  # First line should end with a period
+    "D100",   # Missing docstring in public module
+    "D101",   # Missing docstring in public class
+    "D102",   # Missing docstring in public method
+    "D103",   # Missing docstring in public function
+    "D104",   # Missing docstring in public package
+    "D105",   # Missing docstring in magic method
+    "D107",   # Missing docstring in `__init__`
+    "D200",   # One-line docstring should fit within a single line
+    "D203",   # 1 blank line required before class docstring
+    "D205",   # 1 blank line required between summary line and description
+    "D212",   # Multi-line docstring summary should start at the first line
+    "D400",   # First line should end with a period
     "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in `root`
     "D401",   # First line of docstring should be in imperative mood
     # "D413",  # Missing blank line after last section
-    # "D415",  # First line should end with a period, question mark, or exclamation point
+    "D415",   # First line should end with a period, question mark, or exclamation point
     "ANN001", # Missing type annotation for function argument `item`
     "ANN002", # Missing type annotation for `*args`
     "ANN003", # Missing type annotation for `**kwargs`

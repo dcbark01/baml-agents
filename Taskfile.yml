@@ -52,6 +52,33 @@ tasks:
     internal: true
     cmds:
       - if git diff --exit-code > /dev/null 2>&1 && git diff --cached --exit-code > /dev/null 2>&1; then :; else echo "Changes detected in the working tree or index. Please commit or stash them before proceeding."; exit 1; fi
+
+  bump:internal:
+    internal: true
+    vars:
+      type: '{{.CLI_ARGS | default "patch"}}'
+    cmds:
+      - uv run devtools/bump_readme_version.py `bump-my-version show --increment {{.type}} new_version`
+      - git add README.md
+      - uv run bump-my-version bump {{.type}}
+    desc: Bump version in README.md and pyproject.toml (internal)
+
+  bump:patch:
+    cmds:
+      - task: bump:internal
+        vars:
+          type: patch
+    desc: Bump patch version [Usage] bp
+    aliases: [bp]
+
+  bump:minor:
+    cmds:
+      - task: bump:internal
+        vars:
+          type: minor
+    desc: Bump minor version [Usage] bm
+    aliases: [bm]
+
   publish:internal:
     internal: true
     vars:
@@ -64,9 +91,9 @@ tasks:
       - uv run pytest -q
       - task lint
       # Bump version
-      - uv run devtools/bump_readme_version.py `bump-my-version show --increment {{.type}} new_version`
-      - git add README.md
-      - uv run bump-my-version bump {{.type}}
+      - task: bump:internal
+        vars:
+          type: '{{.type}}'
       # Upload to PyPI
       - rm -rf dist
       - uv build
@@ -74,6 +101,7 @@ tasks:
       # Upload to Github, uploading to Github after PyPI allows for the shields.io badge to be cached to the accurate pypi version
       - git push
     desc: Base publish task (internal)
+
   publish:patch:
     cmds:
       - task: publish:internal
@@ -81,6 +109,7 @@ tasks:
           type: patch
     desc: Publish patch version update [Usage] pp
     aliases: [pp]
+
   publish:minor:
     cmds:
       - task: publish:internal

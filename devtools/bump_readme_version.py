@@ -26,7 +26,7 @@ def _replace_version_badge(content: str, version: str) -> str:
     # Example: https://img.shields.io/badge/0.0.1-version?color=active&style=flat&label=version
     # Should become: https://img.shields.io/badge/0.16.12-version?...
     badge_pattern = re.compile(
-        r"(https://img\.shields\.io/badge/)(\d+\.\d+\.\d+)(-version\?)"
+        r"(https://img\.shields\.io/badge/v)(\d+\.\d+\.\d+)(-version\?)"
     )
     new_content, n = badge_pattern.subn(
         rf"\g<1>{version}\g<3>",
@@ -58,4 +58,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

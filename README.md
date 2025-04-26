@@ -1,19 +1,20 @@
 # baml‑agents
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-success.svg?style=flat)](https://opensource.org/licenses/MIT)
-<a href="https://pypi.org/project/baml-agents"><img src="https://img.shields.io/badge/0.16.18-version?color=active&style=flat&label=version" alt="PyPI version" /></a>
-[![status-prototype](https://img.shields.io/badge/status-prototype-darkgrey.svg?style=flat)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
+[![Status: Experimental](https://img.shields.io/badge/status-experimental-gold.svg?style=flat)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
+[![Maintained: yes](https://img.shields.io/badge/yes-43cd0f.svg?style=flat&label=maintained)](https://github.com/Elijas/baml-agents/issues)
+[![License: MIT](https://img.shields.io/badge/License-MIT-43cd0f.svg?style=flat&label=license)](LICENSE)
+<a href="https://pypi.org/project/baml-agents"><img src="https://img.shields.io/badge/v0.16.18-version?color=43cd0f&style=flat&label=pypi" alt="PyPI version" /></a>
 <a href="https://github.com/astral-sh/ruff?style=flat"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
 
 **Building Agents with LLM structured generation ([BAML](https://www.boundaryml.com/)), [MCP Tools](https://modelcontextprotocol.io/docs/concepts/tools), and [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) principles**
 
-This repository shares useful patterns I use when working with BAML. The API is unstable and may change in future versions. Install with:
+This repository shares useful patterns I use when working with BAML. Note: the API may unexpectedly change with future minor versions, threfore install with:
 
 ```bash
 pip install "baml-agents>=0.16.18,<0.17.0"
 ```
 
-Found this useful? Star the repo on GitHub to show support and follow updates. Also, find me on Discord if you have questions or would like to join a discussion!
+Found this useful? Star the repo on GitHub to show support and follow for updates. Also, find me on Discord if you have questions or would like to join a discussion!
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/elijas/baml-agents?style=flat&color=f0f0f0&labelColor=white&logo=github&logoColor=black)
 &nbsp;<a href="https://discord.gg/hCppPqm6"><img alt="Discord server invite" src="https://img.shields.io/discord/1119368998161752075?logo=discord&logoColor=white&style=flat&color=f0f0f0&labelColor=7289da" height="20"></a>
@@ -105,4 +106,3 @@ To run code from the `notebooks/` folder, you'll first need to:
 - Install all dependencies: `uv sync --dev`
 - Generate necessary BAML code: `uv run baml-cli generate`
   - Alternatively, you can use the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=Boundary.baml-extension) to do it automatically every time you edit a `.baml` file.
-
