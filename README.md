@@ -3,7 +3,7 @@
 [![Status: Experimental](https://img.shields.io/badge/status-experimental-gold.svg?style=flat)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
 [![Maintained: yes](https://img.shields.io/badge/yes-43cd0f.svg?style=flat&label=maintained)](https://github.com/Elijas/baml-agents/issues)
 [![License: MIT](https://img.shields.io/badge/License-MIT-43cd0f.svg?style=flat&label=license)](LICENSE)
-[![Available on PyPI](https://img.shields.io/badge/v0.18.0-version?color=43cd0f&style=flat&label=pypi)](https://pypi.org/project/baml-agents)
+[![Available on PyPI](https://img.shields.io/badge/v0.19.0-version?color=43cd0f&style=flat&label=pypi)](https://pypi.org/project/baml-agents)
 [![Linter: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 **Building Agents with LLM structured generation ([BAML](https://www.boundaryml.com/)), [MCP Tools](https://modelcontextprotocol.io/docs/concepts/tools), and [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) principles**
@@ -11,7 +11,7 @@
 This repository shares useful patterns I use when working with BAML. Note: the API may unexpectedly change with future minor versions, threfore install with:
 
 ```bash
-pip install "baml-agents>=0.18.0,<0.19.0"
+pip install "baml-agents>=0.19.0,<0.20.0"
 ```
 
 Found this useful? Star the repo on GitHub to show support and follow for updates. Also, find me on Discord if you have questions or would like to join a discussion!
