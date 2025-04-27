@@ -31,7 +31,7 @@ tasks:
     desc: Run pytest-watch with coverage reporting
     aliases: [twc, tcw]
   ##############################
-  ### LINT
+  ### LINT AND DEPENDENCIES
   ##############################
   lint:
     cmds:
@@ -44,6 +44,12 @@ tasks:
       - uv run ruff check --fix --watch
     desc: Run Ruff linter in watch mode with auto-fix
     aliases: [lw]
+  upgrade-dependencies:
+    desc: Upgrade all project dependencies to their latest compatible versions
+    cmds:
+      - uv sync --upgrade
+      - uv run python baml_agents/devtools/update_baml_version.py --search-root-path "{{ .TASKFILE_DIR }}" --target-version "$(uv pip list | grep baml-py | awk '{print $2}')" --verbose false
+    aliases: [ud]
   ##############################
   ### PUBLISH
   ##############################

@@ -189,10 +189,20 @@ exclude = [
 target-version = "py312"
 
 [tool.ruff.lint.per-file-ignores]
-"devtools/**/*.py" = [
+"*/devtools/**/*.py" = [
     "T201",    # print() statement found
     "C901",    # Function is too complex
     "PLR0912", # Too many branches
+    "PTH123",  # `open()` should be replaced by `Path.open()`
+    "BLE001",  # Do not catch blind exception: `Exception`
+    "PTH112",  # `os.path.isdir()` should be replaced by `Path.is_dir()`
+    "B007",    # Loop control variable not used within loop body
+    "PTH119",  # `os.path.basename()` should be replaced by `Path.name`
+    "PTH118",  # `os.path.join()` should be replaced by `Path` with `/` operator
+    "T201",    # print() statement found
+    "SIM102",  # Use a single `if` statement instead of nested `if` statements
+    "RET505",  # Unnecessary `else` after `return` statement
+    "PLR0915", # Too many statements in function
 ]
 "tests/**/*.py" = [
     "PT006",   # Wrong type passed to first argument of `pytest.mark.parametrize`; expected `tuple`
