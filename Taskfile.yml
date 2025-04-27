@@ -55,8 +55,6 @@ tasks:
 
   bump:internal:
     internal: true
-    vars:
-      type: '{{.CLI_ARGS | default "patch"}}'
     cmds:
       - uv run devtools/bump_readme_version.py `bump-my-version show --increment {{.type}} new_version`
       - git add README.md
@@ -81,8 +79,6 @@ tasks:
 
   publish:internal:
     internal: true
-    vars:
-      type: '{{.CLI_ARGS | default "patch"}}'
     cmds:
       # Check git state
       - task: ensure-clean-working-tree
