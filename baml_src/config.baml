@@ -1,7 +1,7 @@
 generator target {
     output_type "python/pydantic"
     output_dir ".."
-    version "0.84.4"
+    version "0.85.0"
     default_client_mode sync
 }
 
@@ -12,4 +12,3 @@ client<llm> Default {
     base_url env.OPENAI_API_BASE
   }
 }
-
