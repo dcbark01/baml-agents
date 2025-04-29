@@ -8,7 +8,7 @@
 
 **Building Agents with LLM structured generation ([BAML](https://www.boundaryml.com/)), [MCP Tools](https://modelcontextprotocol.io/docs/concepts/tools), and [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) principles**
 
-This repository shares useful patterns I use when working with BAML. Note: the API may unexpectedly change with future minor versions, threfore install with:
+This repository shares useful patterns I use when working with BAML. Note: The API may unexpectedly change with future minor versions; therefore, install with specific version constraints:
 
 ```bash
 pip install "baml-agents>=0.22.1,<0.23.0"
