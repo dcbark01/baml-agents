@@ -167,7 +167,7 @@ def update_version_in_file(*, file_path: Path, new_version: str, verbose: bool) 
         return False
 
 
-def main():
+def update_baml_generator_versions():
     parser = argparse.ArgumentParser(
         description="Recursively find 'baml_src' folders and update the version string "
         "in 'version \"...\"' lines ONLY within 'generator ... {}' blocks inside .baml files."
@@ -253,4 +253,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    update_baml_generator_versions()
