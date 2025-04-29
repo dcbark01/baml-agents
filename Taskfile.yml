@@ -48,7 +48,7 @@ tasks:
     desc: Upgrade all project dependencies to their latest compatible versions
     cmds:
       - uv sync --upgrade
-      - uv run python baml_agents/devtools/update_baml_version.py --search-root-path "{{ .TASKFILE_DIR }}" --target-version "$(uv pip list | grep baml-py | awk '{print $2}')" --verbose false
+      - baml_agents/devtools/update_baml_generator_versions.py --search-root-path "{{ .TASKFILE_DIR }}" --target-version "$(uv pip list | grep baml-py | awk '{print $2}')" --verbose false
     aliases: [ud]
   ##############################
   ### PUBLISH
