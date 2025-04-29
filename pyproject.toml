@@ -33,6 +33,13 @@ dev = [
 ]
 
 ##############################
+### EXECUTABLES
+##############################
+
+[project.scripts]
+update-baml = "devtools.update_baml_generator_versions:main"
+
+##############################
 ### BUMP VERSION
 ##############################
 
