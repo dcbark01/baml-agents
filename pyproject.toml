@@ -37,7 +37,7 @@ dev = [
 ##############################
 
 [project.scripts]
-update-baml = "devtools.update_baml_generator_versions:main"
+update-baml = "baml_agents.devtools.update_baml_generator_versions:main"
 
 ##############################
 ### BUMP VERSION
