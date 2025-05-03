@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from baml_agents._agent_tools._utils._sole import sole
+from baml_agents._utils._sole import sole
 
 T = TypeVar("T")
 
@@ -23,4 +23,3 @@ def display_prompt(request):
         get_prompt(request).replace("<", "‹").replace(">", "›")  # noqa: RUF001
     )
     print(escaped_prompt)  # noqa: T201
-

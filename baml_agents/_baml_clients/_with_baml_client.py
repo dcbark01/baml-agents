@@ -5,7 +5,7 @@ from baml_py import ClientRegistry
 T = TypeVar("T")
 
 
-def with_client(
+def with_baml_client(
     b: T,
     *,
     provider: str,
@@ -23,4 +23,3 @@ def with_client(
     )
     cr.set_primary(name)
     return b.with_options(client_registry=cr)  # type: ignore
-

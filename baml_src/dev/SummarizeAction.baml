@@ -12,7 +12,7 @@ function SummarizeAction(action: string, result: string) -> string {
       </result>
     "#
 }
-test test {
+test t {
     functions [SummarizeAction]
     args {action #"{
       "action_id": "get_weather",

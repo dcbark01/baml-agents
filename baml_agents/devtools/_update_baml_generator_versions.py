@@ -1,6 +1,7 @@
 #!/usr/bin/env -S uv run
 import argparse
 import re
+import subprocess
 import sys
 import traceback
 from pathlib import Path
@@ -174,27 +175,54 @@ def update_baml_generator_versions():
     )
     parser.add_argument(
         "--search-root-path",
-        required=True,
-        help="The root folder path to search within.",
+        required=False,
+        default=str(Path.cwd()),
+        help="The root folder path to search within. Defaults to the current working directory.",
     )
     parser.add_argument(
         "--target-version",
-        required=True,
-        help="The new version string (e.g., '0.123.0').",
+        required=False,
+        help="The new version string (e.g., '0.123.0'). Defaults to the installed baml-py version.",
     )
-    # Added verbose argument - REQUIRED
     parser.add_argument(
         "--verbose",
-        required=True,  # Make it mandatory
-        choices=["true", "false"],  # Restrict values
+        required=False,
+        choices=["true", "false"],
+        default="false",
         help="Set to 'true' for detailed output, 'false' for summary only.",
     )
 
     args = parser.parse_args()
 
+    # Determine the new version, running subprocess only if not provided
+    if args.target_version is None:
+        installed_version = subprocess.run(  # noqa: S603
+            ["uv", "pip", "list"],  # noqa: S607
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        baml_py_version = next(
+            (
+                line.split()[1]
+                for line in installed_version.stdout.splitlines()
+                if "baml-py" in line
+            ),
+            None,
+        )
+        if baml_py_version is None:
+            print(
+                "Error: baml-py version not found in pip list output.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        new_version = baml_py_version
+    else:
+        new_version = str(args.target_version)
+    new_version = new_version.replace('"', "").replace("'", "").strip()
+
     # Convert string path argument to a Path object
     root_folder = Path(args.search_root_path)
-    new_version = args.target_version
     # Convert verbose string to boolean
     verbose = args.verbose.lower() == "true"
 
