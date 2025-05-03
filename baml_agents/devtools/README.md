@@ -26,8 +26,8 @@ uvx --from baml-agents update-baml --target-version 0.85.0 --search-root-path . 
 
 **Arguments:**
 
-*   `--target-version`: (Required) The new BAML version string (e.g., `0.85.0`) to set in the generator blocks.
-*   `--search-root-path`: (Required) The root directory from which to start recursively searching for `baml_src` folders containing `.baml` files.
+*   `--target-version`: (Optional) The new BAML version string (e.g., `0.85.0`) to set in the generator blocks.
+*   `--search-root-path`: (Optional) The root directory from which to start recursively searching for `baml_src` folders containing `.baml` files.
 *   `--verbose`: (Optional) Set to `true` for detailed output, `false` (default) for less output.
 
 **Pro Tips:**
