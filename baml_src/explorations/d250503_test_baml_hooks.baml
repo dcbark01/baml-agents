@@ -9,7 +9,7 @@ class TestBamlHooks_City {
 }
 
 function TestBamlHooks_ExtractCity(text: string) -> TestBamlHooks_City {
-  client "openai/gpt-4.1-nano"
+  client Default
   prompt #"
     Extract: 
     "{{ text }}". 
@@ -18,7 +18,7 @@ function TestBamlHooks_ExtractCity(text: string) -> TestBamlHooks_City {
 }
 
 function TestBamlHooks_Echo(text: string) -> string {
-  client "openai/gpt-4.1-nano"
+  client Default
   prompt #"
     Just repeat the text:
     "{{ text }}". 
@@ -27,7 +27,7 @@ function TestBamlHooks_Echo(text: string) -> string {
 }
 
 function TestBamlHooks_ExtractEntities(text: string) -> (TestBamlHooks_City | TestBamlHooks_Person)[] {
-  client "openai/gpt-4.1-nano"
+  client Default
   prompt #"
     Extract: 
     "{{ text }}". 

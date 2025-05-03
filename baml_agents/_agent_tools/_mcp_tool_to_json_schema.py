@@ -1,8 +1,8 @@
 from baml_py.type_builder import TypeBuilder
 
 from baml_agents._agent_tools._utils._snake_to_pascal import snake_to_pascal
+from baml_agents._utils._merge_dicts_no_overlap import merge_dicts_no_overlap
 
-from ._merge_dicts_no_overlap import merge_dicts_no_overlap
 from ._tool_definition import McpToolDefinition
 
 
@@ -25,4 +25,3 @@ def mcp_tool_to_json_schema(
     schema["properties"] = props
     schema["required"] = (*schema.get("required", []), baml_tool_id_field)
     return schema
-

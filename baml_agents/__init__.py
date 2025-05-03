@@ -3,33 +3,37 @@ from baml_agents._agent_tools._mcp import ActionRunner
 from baml_agents._agent_tools._str_result import Result
 from baml_agents._agent_tools._tool_definition import McpToolDefinition
 from baml_agents._agent_tools._utils._baml_utils import display_prompt
+from baml_agents._baml_client_proxy._baml_client_proxy import BamlClientProxy
+from baml_agents._baml_client_proxy._hook_engine import HookEngineAsync, HookEngineSync
+from baml_agents._baml_client_proxy._hooks._base_hook import (
+    BaseBamlHook,
+    BaseBamlHookContext,
+)
+from baml_agents._baml_client_proxy._hooks._on_after_call_success_hook import (
+    OnAfterCallSuccessHookAsync,
+    OnAfterCallSuccessHookContext,
+    OnAfterCallSuccessHookSync,
+)
+from baml_agents._baml_client_proxy._hooks._on_before_call_hook import (
+    OnBeforeCallHookAsync,
+    OnBeforeCallHookContext,
+    OnBeforeCallHookSync,
+)
+from baml_agents._baml_client_proxy._hooks._on_error_hook import (
+    OnErrorHookAsync,
+    OnErrorHookContext,
+    OnErrorHookSync,
+)
+from baml_agents._baml_client_proxy._hooks._on_partial_response_parsed_hook import (
+    OnPartialResponseParsedHookAsync,
+    OnPartialResponseParsedHookContext,
+    OnPartialResponseParsedHookSync,
+)
+from baml_agents._baml_client_proxy._hooks._types import Mutable
+from baml_agents._baml_client_proxy._hooks._with_options import WithOptions
+from baml_agents._baml_client_proxy._with_hooks import with_hooks
 from baml_agents._baml_clients._with_baml_client import with_baml_client
 from baml_agents._baml_clients._with_model import BamlModelConfig, with_model
-from baml_agents._baml_hooks._baml_client_proxy import BamlClientProxy
-from baml_agents._baml_hooks._hook_engine import HookEngine
-from baml_agents._baml_hooks._hooks._base_hook import BaseBamlHook, BaseBamlHookContext
-from baml_agents._baml_hooks._hooks._handle_llm_interaction_hook import (
-    HandleLlmInteractionHook,
-    HandleLlmInteractionHookContext,
-)
-from baml_agents._baml_hooks._hooks._on_after_call_success_hook import (
-    OnAfterCallSuccessHook,
-    OnAfterCallSuccessHookContext,
-)
-from baml_agents._baml_hooks._hooks._on_before_call_hook import (
-    OnBeforeCallHook,
-    OnBeforeCallHookContext,
-)
-from baml_agents._baml_hooks._hooks._on_error_hook import (
-    OnErrorHook,
-    OnErrorHookContext,
-)
-from baml_agents._baml_hooks._hooks._on_partial_response_parsed_hook import (
-    OnPartialResponseParsedHook,
-    OnPartialResponseParsedHookContext,
-)
-from baml_agents._baml_hooks._hooks._types import BamlMutableParams, BamlMutableResult
-from baml_agents._baml_hooks._with_hooks import with_hooks
 from baml_agents._project_utils._get_root_path import get_root_path
 from baml_agents._project_utils._init_logging import init_logging
 
@@ -39,23 +43,26 @@ __all__ = [
     "ActionRunner",
     "BamlClientProxy",
     "BamlModelConfig",
-    "BamlMutableParams",
-    "BamlMutableResult",
     "BaseBamlHook",
     "BaseBamlHookContext",
-    "HandleLlmInteractionHook",
-    "HandleLlmInteractionHookContext",
-    "HookEngine",
+    "HookEngineAsync",
+    "HookEngineSync",
     "McpToolDefinition",
-    "OnAfterCallSuccessHook",
+    "Mutable",
+    "OnAfterCallSuccessHookAsync",
     "OnAfterCallSuccessHookContext",
-    "OnBeforeCallHook",
+    "OnAfterCallSuccessHookSync",
+    "OnBeforeCallHookAsync",
     "OnBeforeCallHookContext",
-    "OnErrorHook",
+    "OnBeforeCallHookSync",
+    "OnErrorHookAsync",
     "OnErrorHookContext",
-    "OnPartialResponseParsedHook",
+    "OnErrorHookSync",
+    "OnPartialResponseParsedHookAsync",
     "OnPartialResponseParsedHookContext",
+    "OnPartialResponseParsedHookSync",
     "Result",
+    "WithOptions",
     "display_prompt",
     "get_root_path",
     "init_logging",

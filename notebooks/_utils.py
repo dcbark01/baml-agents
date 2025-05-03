@@ -1,4 +1,5 @@
 import re
+import hashlib
 from dataclasses import dataclass
 from typing import Any, List
 
@@ -15,13 +16,18 @@ def print_used_model(result):
     print(f"Used model: {model}")
 
 
+def _compute_city_hash(city: str) -> int:
+    """Compute the MD5 hash of a city name and return it as an integer."""
+    return int(hashlib.md5(city.lower().encode()).hexdigest(), 16)
+
+
 def city_to_number(city: str, min_value: int, max_value: int) -> int:
     """
     Deterministically map a city name to an integer in the range [min_value, max_value].
     """
     if min_value > max_value:
         raise ValueError("min_value must be less than or equal to max_value")
-    city_hash = abs(hash(city.lower()))
+    city_hash = _compute_city_hash(city)
     range_size = max_value - min_value + 1
     return (city_hash % range_size) + min_value
 
@@ -36,7 +42,7 @@ def city_to_weather_condition(city: str) -> str:
     Deterministically map a city name to a weather condition.
     """
     conditions = ["Sunny", "Cloudy", "Rainy", "Stormy", "Snowy", "Windy", "Foggy"]
-    city_hash = abs(hash(city.lower()))
+    city_hash = _compute_city_hash(city)
     return conditions[city_hash % len(conditions)]
 
 
@@ -61,4 +67,3 @@ class InteractionHistory:
     def __len__(self) -> int:
         """Returns the number of interactions recorded."""
         return len(self.interactions)
-

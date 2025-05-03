@@ -1,13 +1,12 @@
 import functools
 import inspect
 from collections.abc import Callable, Sequence
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Self, TypeVar
 
-from icecream import ic
-
-from baml_agents._baml_hooks._hook_engine import HookEngine
-from baml_agents._baml_hooks._hooks._base_hook import BaseBamlHook
-from baml_agents._baml_hooks._hooks._types import BamlMutableResult
+from baml_agents._baml_client_proxy._hook_engine import HookEngineAsync, HookEngineSync
+from baml_agents._baml_client_proxy._hooks._base_hook import BaseBamlHook
+from baml_agents._baml_client_proxy._hooks._types import Mutable
+from baml_agents._utils._merge_dicts_no_overlap import merge_dicts_no_overlap
 from baml_agents._utils._sole import sole
 
 T_BamlClient = TypeVar("T_BamlClient")
@@ -33,6 +32,14 @@ class BamlClientProxy(Generic[T_BamlClient]):
         object.__setattr__(self, "_hooks", hooks)
         object.__setattr__(self, "_root_target", root_target or b)
 
+    def add_hooks(self, hooks: Sequence[BaseBamlHook]) -> Self:
+        current_hooks = object.__getattribute__(self, "_hooks")
+        if current_hooks is None:
+            object.__setattr__(self, "_hooks", hooks)
+        else:
+            object.__setattr__(self, "_hooks", current_hooks + hooks)
+        return self
+
     def __getattribute__(self, name: str) -> Any:
         # 1. Access internal attributes of the wrapper directly.
         # Use object.__getattribute__ to prevent recursion.
@@ -44,7 +51,12 @@ class BamlClientProxy(Generic[T_BamlClient]):
             )
 
         if name in {
+            "parse_stream",
+            "request",
+            "stream",
+            "stream_request",
             "with_options",
+            "add_hooks",
             "__class__",
             "__init__",
             "__getattribute__",
@@ -91,21 +103,22 @@ class BamlClientProxy(Generic[T_BamlClient]):
                 params: dict[str, Any] = object.__getattribute__(
                     self, "_get_baml_function_params"
                 )(attr, args, kwargs)
-                hook_engine: HookEngine | None = object.__getattribute__(
-                    self, "_create_hook_engine"
-                )(
-                    baml_function_name=name,
-                    baml_function_params=params,
-                    baml_function_async=True,
+                hook_engine = (
+                    HookEngineAsync(
+                        hooks=hooks,
+                        baml_function_name=name,
+                        baml_function_params=params,
+                    )
+                    if (hooks := object.__getattribute__(self, "_hooks"))
+                    else None
                 )
 
                 if hook_engine:
                     await hook_engine.on_before_call()
 
-                    result = await attr(**hook_engine.get_baml_function_kwargs())
+                    result = await attr(**hook_engine.params)
 
-                    result = BamlMutableResult(baml_function_return_value=result)
-                    await hook_engine.on_after_call_success(result)
+                    await hook_engine.on_after_call_success(Mutable(value=result))
                 else:
                     result = await attr(*args, **kwargs)
 
@@ -119,21 +132,24 @@ class BamlClientProxy(Generic[T_BamlClient]):
             params: dict[str, Any] = object.__getattribute__(
                 self, "_get_baml_function_params"
             )(attr, args, kwargs)
-            hook_engine: HookEngine | None = object.__getattribute__(
-                self, "_create_hook_engine"
-            )(
-                baml_function_name=name,
-                baml_function_params=params,
-                baml_function_async=False,
+            hook_engine = (
+                HookEngineSync(
+                    hooks=hooks,
+                    baml_function_name=name,
+                    baml_function_params=params,
+                )
+                if (hooks := object.__getattribute__(self, "_hooks"))
+                else None
             )
 
             if hook_engine:
-                hook_engine.on_before_call_sync()
+                hook_engine.on_before_call()
 
-                result = attr(**hook_engine.get_baml_function_kwargs())
+                result = attr(**hook_engine.params)
 
-                result = BamlMutableResult(baml_function_return_value=result)
-                hook_engine.on_after_call_success_sync(result)
+                mutable_result = Mutable(value=result)
+                hook_engine.on_after_call_success(mutable_result)
+                result = mutable_result.value
             else:
                 result = attr(*args, **kwargs)
 
@@ -165,45 +181,45 @@ class BamlClientProxy(Generic[T_BamlClient]):
         baml_function_args: tuple,
         baml_function_kwargs: dict,
     ) -> dict[str, Any]:
+        signature = inspect.signature(baml_function)
+        bound = signature.bind(*baml_function_args, **baml_function_kwargs)
+        bound.apply_defaults()
+
         default_baml_options = sole(
             getattr(object.__getattribute__(self, "_root_target"), attr)
             for attr in dir(object.__getattribute__(self, "_root_target"))
             if attr.endswith("__baml_options")
         )
-        print(f"{default_baml_options=}")
+        baml_options = merge_dicts_no_overlap(
+            default_baml_options,
+            bound.arguments.get("baml_options", {}),
+            error_message="Overwriting baml options may lead to silently breaking behaviors from other hooks",
+        )
 
-        signature = inspect.signature(baml_function)
-        bound = signature.bind(*baml_function_args, **baml_function_kwargs)
-        bound.apply_defaults()
-
-        baml_options = {
-            **default_baml_options,
-            **bound.arguments.get("baml_options", {}),
-        }
         return {
             **bound.arguments,
             "baml_options": baml_options,
         }
 
-    def _create_hook_engine(
-        self,
-        baml_function_name: str,
-        baml_function_params: dict[str, Any],
-        *,
-        baml_function_async: bool,
-    ) -> HookEngine | None:
-        return (
-            HookEngine(
-                hooks=hooks,
-                baml_function_name=baml_function_name,
-                baml_function_params=baml_function_params,
-                baml_function_async=baml_function_async,
-            )
-            if (hooks := object.__getattribute__(self, "_hooks"))
-            else None
+    def with_options(self, *__, **_):
+        raise AttributeError(
+            "Use instead: b = with_hooks(b, [WithOptions(client_registry=..., type_builder=..., collector=...)])"
         )
 
-    def with_options(self, **kwargs):
+    @property
+    def parse_stream(self) -> Any:
+        raise NotImplementedError("parse_stream is not implemented in BamlClientProxy")
+
+    @property
+    def request(self) -> Any:
+        raise NotImplementedError("request is not implemented in BamlClientProxy")
+
+    @property
+    def stream(self) -> Any:
+        raise NotImplementedError("stream is not implemented in BamlClientProxy")
+
+    @property
+    def stream_request(self) -> Any:
         raise NotImplementedError(
-            "Error: You must first set options using 'b.with_options(...)' to create an instance 'b'. Only then can you wrap it with hooks using 'with_hooks(b, [...])' or `with_llm_handler(b, ...)`."
+            "stream_request is not implemented in BamlClientProxy"
         )

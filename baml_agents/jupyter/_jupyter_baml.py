@@ -10,11 +10,12 @@ from typing import Any, Generic, Literal, TypeVar, cast
 from baml_py import Collector
 from IPython.display import Javascript, display
 
+from baml_agents._utils._sole import sole
+
 from ._jupyter_button_hide import (
     hide_text_under_a_button,
     hide_text_under_a_button_nested,
 )
-from ._sole import sole
 from ._token_cost_estimator import TokenCostEstimator
 
 T = TypeVar("T")
@@ -514,4 +515,3 @@ class JupyterBamlMonitor(Generic[T]):
         if self._streamer is not None:
             self._streamer.__exit__(exc_type, exc_val, exc_tb)
             self._streamer = None
-
