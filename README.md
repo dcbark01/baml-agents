@@ -28,6 +28,7 @@ This project is maintained independently by Elijas and is not affiliated with th
 
 *   `/notebooks`: **Core Tutorials & Examples.** Contains curated Jupyter notebooks demonstrating key features and recommended patterns. Start here to learn `baml-agents`.
 *   `/explorations`: **Experimental & Niche Content.** Holds prototypes, tests, and examples for specific or advanced use cases. Content may be less polished or stable. See the [explorations README](./explorations/README.md) for details.
+*   `/devtools`: **Developer Utilities.** Contains helper scripts for project maintenance, development workflows, and automating tasks (e.g., updating baml generator versions). See the [devtools README](./devtools/README.md).
 
 ## Contents (Core Tutorials)
 
