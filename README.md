@@ -3,12 +3,13 @@
 [![Status: Experimental](https://img.shields.io/badge/status-experimental-gold.svg?style=flat)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
 [![Maintained: yes](https://img.shields.io/badge/yes-43cd0f.svg?style=flat&label=maintained)](https://github.com/Elijas/baml-agents/issues)
 [![License: MIT](https://img.shields.io/badge/License-MIT-43cd0f.svg?style=flat&label=license)](LICENSE)
-[![Available on PyPI](https://img.shields.io/badge/v0.22.1-version?color=43cd0f&style=flat&label=pypi)](https://pypi.org/project/baml-agents)
+[![PyPI Version](https://img.shields.io/badge/v0.22.1-version?color=43cd0f&style=flat&label=pypi)](https://pypi.org/project/baml-agents)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/baml-agents?color=43cd0f&style=flat&label=downloads)](https://pypistats.org/packages/baml-agents)
 [![Linter: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 **Building Agents with LLM structured generation ([BAML](https://www.boundaryml.com/)), [MCP Tools](https://modelcontextprotocol.io/docs/concepts/tools), and [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) principles**
 
-This repository shares useful patterns I use when working with BAML. Note: the API may unexpectedly change with future minor versions, threfore install with:
+This repository shares useful patterns I use when working with BAML. Note: The API may unexpectedly change with future minor versions; therefore, install with specific version constraints:
 
 ```bash
 pip install "baml-agents>=0.22.1,<0.23.0"
@@ -23,7 +24,15 @@ Found this useful? Star the repo on GitHub to show support and follow for update
 
 This project is maintained independently by Elijas and is not affiliated with the official BAML project.
 
-## Contents
+## Repository Structure
+
+*   `/notebooks`: **Core Tutorials & Examples.** Contains curated Jupyter notebooks demonstrating key features and recommended patterns. Start here to learn `baml-agents`.
+*   `/explorations`: **Experimental & Niche Content.** Holds prototypes, tests, and examples for specific or advanced use cases. Content may be less polished or stable. See the [explorations README](./explorations/README.md).
+*   `/baml_agents/devtools`: **Developer Utilities.** Contains helper scripts for project maintenance, development workflows, and automating tasks (e.g., updating baml generator versions). See the [devtools README](./baml_agents/devtools/README.md).
+
+## Contents (Core Tutorials)
+
+The primary tutorials are located in the `/notebooks` directory:
 
 1.  [Flexible LLM Client Management in BAML](notebooks/01_baml_llm_client_config.ipynb)
     - Effortlessly switch between different LLM providers (like OpenAI, Anthropic, Google) at runtime using simple helper functions.
