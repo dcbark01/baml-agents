@@ -24,7 +24,14 @@ Found this useful? Star the repo on GitHub to show support and follow for update
 
 This project is maintained independently by Elijas and is not affiliated with the official BAML project.
 
-## Contents
+## Repository Structure
+
+*   `/notebooks`: **Core Tutorials & Examples.** Contains curated Jupyter notebooks demonstrating key features and recommended patterns. Start here to learn `baml-agents`.
+*   `/explorations`: **Experimental & Niche Content.** Holds prototypes, tests, and examples for specific or advanced use cases. Content may be less polished or stable. See the [explorations README](./explorations/README.md) for details.
+
+## Contents (Core Tutorials)
+
+The primary tutorials are located in the `/notebooks` directory:
 
 1.  [Flexible LLM Client Management in BAML](notebooks/01_baml_llm_client_config.ipynb)
     - Effortlessly switch between different LLM providers (like OpenAI, Anthropic, Google) at runtime using simple helper functions.
