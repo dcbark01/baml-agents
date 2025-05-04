@@ -6,6 +6,9 @@ from baml_agents._baml_client_proxy._hooks._base_hook import (
     BaseBamlHookAsync,
     BaseBamlHookContext,
 )
+from baml_agents._baml_client_proxy._hooks._implementations._with_options import (
+    WithOptions,
+)
 from baml_agents._baml_client_proxy._hooks._on_after_call_success_hook import (
     OnAfterCallSuccessHookAsync,
     OnAfterCallSuccessHookContext,
@@ -17,7 +20,6 @@ from baml_agents._baml_client_proxy._hooks._on_before_call_hook import (
     OnBeforeCallHookSync,
 )
 from baml_agents._baml_client_proxy._hooks._types import Mutable
-from baml_agents._baml_client_proxy._hooks._with_options import WithOptions
 
 
 class BaseHookEngine:

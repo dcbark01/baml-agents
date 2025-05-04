@@ -9,6 +9,12 @@ from baml_agents._baml_client_proxy._hooks._base_hook import (
     BaseBamlHook,
     BaseBamlHookContext,
 )
+from baml_agents._baml_client_proxy._hooks._implementations._test_generator import (
+    BamlTestGeneratorHook,
+)
+from baml_agents._baml_client_proxy._hooks._implementations._with_options import (
+    WithOptions,
+)
 from baml_agents._baml_client_proxy._hooks._on_after_call_success_hook import (
     OnAfterCallSuccessHookAsync,
     OnAfterCallSuccessHookContext,
@@ -30,7 +36,6 @@ from baml_agents._baml_client_proxy._hooks._on_partial_response_parsed_hook impo
     OnPartialResponseParsedHookSync,
 )
 from baml_agents._baml_client_proxy._hooks._types import Mutable
-from baml_agents._baml_client_proxy._hooks._with_options import WithOptions
 from baml_agents._baml_client_proxy._with_hooks import with_hooks
 from baml_agents._baml_clients._with_baml_client import with_baml_client
 from baml_agents._baml_clients._with_model import BamlModelConfig, with_model
@@ -43,6 +48,7 @@ __all__ = [
     "ActionRunner",
     "BamlClientProxy",
     "BamlModelConfig",
+    "BamlTestGeneratorHook",
     "BaseBamlHook",
     "BaseBamlHookContext",
     "HookEngineAsync",
