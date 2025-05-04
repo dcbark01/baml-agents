@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import final
+from collections.abc import Mapping
+from typing import Any, Self, final
+
+from frozendict import frozendict
 
 from baml_agents._baml_client_proxy._hooks._base_hook import (
     BaseBamlHookAsync,
@@ -11,7 +14,13 @@ from baml_agents._baml_client_proxy._hooks._types import Mutable
 
 @final
 class OnAfterCallSuccessHookContext(BaseBamlHookContext):
-    pass
+    params: frozendict[str, Any]
+
+    @classmethod
+    def from_base_context(
+        cls, *, ctx: "BaseBamlHookContext", params: Mapping[str, Any]
+    ) -> Self:
+        return cls(**ctx.model_dump(), params=frozendict(params))
 
 
 class OnAfterCallSuccessHookAsync(BaseBamlHookAsync, ABC):

@@ -12,6 +12,7 @@ requires-python = ">=3.12"
 
 dependencies = [
     "baml-py==0.86.1",
+    "frozendict>=2.4.6",
     "loguru>=0.7.3",
     "pydantic>=2.11.3",
     "requests>=2.32.3",
@@ -25,6 +26,7 @@ dev = [
     "ipywidgets>=8.1.6",
     "jupyter-black>=0.4.0",
     "openai>=1.77.0",
+    "pyperclip>=1.9.0",
     "pytest>=8.3.5",
     "pytest-cov>=6.1.1",
     "pytest-watch>=4.2.0",
@@ -39,6 +41,7 @@ dev = [
 
 [project.scripts]
 update-baml = "baml_agents.devtools:update_baml_generator_versions"
+generate-commit-message = "baml_agents.devtools:generate_commit_message"
 
 ##############################
 ### BUMP VERSION

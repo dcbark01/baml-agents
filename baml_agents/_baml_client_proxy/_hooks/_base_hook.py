@@ -14,8 +14,8 @@ class BaseBamlHookContext(BaseModel):
     model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True)
 
     @classmethod
-    def from_base_context(cls, base_context: "BaseBamlHookContext") -> Self:
-        return cls(**base_context.model_dump())
+    def from_base_context(cls, *, ctx: "BaseBamlHookContext") -> Self:
+        return cls(**ctx.model_dump())
 
 
 class BaseBamlHook:
