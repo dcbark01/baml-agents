@@ -22,7 +22,7 @@ test {test_name} {{
 
 def get_test_name(params, baml_function_name):
     hash_input = f"{params}{baml_function_name}"
-    return hashlib.md5(hash_input.encode()).hexdigest()  # noqa: S324
+    return hashlib.md5(hash_input.encode()).hexdigest()[:5]  # noqa: S324
 
 
 class BamlTestGeneratorHook(OnBeforeCallHookSync):
