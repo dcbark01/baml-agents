@@ -69,13 +69,15 @@ class HookEngineSync(BaseHookEngine):
     def on_before_call(self) -> None:
         for hook in self._hooks:
             if isinstance(hook, OnBeforeCallHookSync):
-                ctx = OnBeforeCallHookContext.from_base_context(self._ctx)
+                ctx = OnBeforeCallHookContext.from_base_context(ctx=self._ctx)
                 hook.on_before_call(ctx=ctx, params=self.params)
 
     def on_after_call_success(self, result: Mutable) -> None:
         for hook in self._hooks:
             if isinstance(hook, OnAfterCallSuccessHookSync):
-                ctx = OnAfterCallSuccessHookContext.from_base_context(self._ctx)
+                ctx = OnAfterCallSuccessHookContext.from_base_context(
+                    ctx=self._ctx, params=self.params
+                )
                 hook.on_after_call_success(ctx=ctx, result=result)
 
 
