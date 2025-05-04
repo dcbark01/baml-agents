@@ -37,7 +37,7 @@ from baml_agents._baml_clients._with_model import BamlModelConfig, with_model
 from baml_agents._project_utils._get_root_path import get_root_path
 from baml_agents._project_utils._init_logging import init_logging
 
-__version__ = "0.25.1"
+__version__ = "0.25.2"
 __all__ = [
     "Action",
     "ActionRunner",
