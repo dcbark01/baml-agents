@@ -1,12 +1,6 @@
-import json
-import hashlib
-from textwrap import indent as indent_text, dedent
-from typing import Any, List, Dict, Union
-import re
+from typing import Any
 
 from pydantic import BaseModel
-from baml_agents import OnBeforeCallHookSync, OnBeforeCallHookContext
-from datetime import datetime
 
 
 # The core recursive formatting function
@@ -23,7 +17,7 @@ def _format_baml_value(value: Any, indent_level: int) -> str:
         # Format model as dict at the same indent level
         return _format_baml_value(value.model_dump(mode="json"), indent_level)
 
-    elif isinstance(value, dict):
+    if isinstance(value, dict):
         if not value:
             return "{}"  # Empty dict inline
         items = []
@@ -39,7 +33,7 @@ def _format_baml_value(value: Any, indent_level: int) -> str:
         # Construct dict string with braces at the current indent level
         return f"{indent_space}{{\n" + "\n".join(items) + f"\n{indent_space}}}"
 
-    elif isinstance(value, list):
+    if isinstance(value, list):
         if not value:
             return "[]"  # Empty list inline
         items = []
@@ -58,26 +52,25 @@ def _format_baml_value(value: Any, indent_level: int) -> str:
 
         # Construct list string with brackets at the current indent level
         # Items are joined by newlines; their existing indentation handles alignment.
-        return f"[\n" + "\n".join(items) + f"\n{indent_space}]"
+        return "[\n" + "\n".join(items) + f"\n{indent_space}]"
 
     # Primitives: Return representation without adding indentation here.
-    elif isinstance(value, str):
+    if isinstance(value, str):
         escaped_value = value.replace("\\", "\\\\").replace('"', '\\"')
         return f'"{escaped_value}"'
-    elif isinstance(value, bool):
+    if isinstance(value, bool):
         return "true" if value else "false"
-    elif isinstance(value, (int, float)):
+    if isinstance(value, (int, float)):
         return str(value)
-    elif value is None:
+    if value is None:
         return "null"
-    else:
-        # Fallback for unsupported types
-        print(
-            f"Warning: Unsupported type {type(value)} for BAML generation. Using repr()."
-        )
-        repr_str = repr(value)
-        escaped_repr = repr_str.replace("\\", "\\\\").replace('"', '\\"')
-        return f'"{escaped_repr}"'
+    # Fallback for unsupported types
+    print(
+        f"Warning: Unsupported type {type(value)} for BAML generation. Using repr()."
+    )
+    repr_str = repr(value)
+    escaped_repr = repr_str.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped_repr}"'
 
 
 def get_args_block_str(params):
