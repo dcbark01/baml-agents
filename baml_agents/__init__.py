@@ -2,7 +2,7 @@ from baml_agents._agent_tools._action import Action
 from baml_agents._agent_tools._mcp import ActionRunner
 from baml_agents._agent_tools._str_result import Result
 from baml_agents._agent_tools._tool_definition import McpToolDefinition
-from baml_agents._agent_tools._utils._baml_utils import display_prompt
+from baml_agents._agent_tools._utils._baml_utils import display_prompt, get_prompt
 from baml_agents._baml_client_proxy._baml_client_proxy import BamlClientProxy
 from baml_agents._baml_client_proxy._hook_engine import HookEngineAsync, HookEngineSync
 from baml_agents._baml_client_proxy._hooks._base_hook import (
@@ -70,6 +70,7 @@ __all__ = [
     "Result",
     "WithOptions",
     "display_prompt",
+    "get_prompt",
     "get_root_path",
     "init_logging",
     "with_baml_client",
