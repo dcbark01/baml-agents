@@ -40,36 +40,29 @@ def update_version_in_file(*, file_path: Path, new_version: str, verbose: bool) 
     try:
         if verbose:
             print(f"Processing: {file_path}")
-        # Use Path object's methods for reading/writing
         original_content = file_path.read_text(encoding="utf-8")
 
         modified_content = original_content
         modification_made = False
         matches_found_count = 0
-        # Keep track of matches *actually* needing replacement inside generators
         matches_replaced_in_generator = 0
 
-        # --- Replacement Function ---
         def replace_if_in_generator_block(match):
             nonlocal modification_made, matches_found_count, matches_replaced_in_generator
-            matches_found_count += 1  # Count every potential version line found
+            matches_found_count += 1
 
             old_version = match.group(2)
-            # Optimization: If version already matches, no need for context check
             if old_version == new_version:
                 if verbose:
                     print(
                         f"  - Found version '{old_version}' @ pos {match.start()}, already matches target. Skipping."
                     )
-                return match.group(0)  # Return the original matched text
+                return match.group(0)
 
             match_start_index = match.start()
-
-            # --- Context Check ---
             last_open_brace_index = original_content.rfind("{", 0, match_start_index)
             last_close_brace_index = original_content.rfind("}", 0, match_start_index)
 
-            # Check if we are inside any block ({ exists before match)
             if last_open_brace_index == -1:
                 if verbose:
                     print(
@@ -77,7 +70,6 @@ def update_version_in_file(*, file_path: Path, new_version: str, verbose: bool) 
                     )
                 return match.group(0)
 
-            # Check if the last block we entered is still open (no } after the last {)
             if last_close_brace_index > last_open_brace_index:
                 if verbose:
                     print(
@@ -85,43 +77,33 @@ def update_version_in_file(*, file_path: Path, new_version: str, verbose: bool) 
                     )
                 return match.group(0)
 
-            # Find the start of the line containing the opening brace
             block_header_start_index = (
                 original_content.rfind("\n", 0, last_open_brace_index) + 1
             )
-
-            # Extract the content of the line containing the opening brace
-            # Find the end of that line
             block_header_line_end = original_content.find(
                 "\n", block_header_start_index
             )
-            if block_header_line_end == -1:  # Handle case where header is last line
+            if block_header_line_end == -1:
                 block_header_line_end = len(original_content)
 
-            # Slice the line content up to and including the opening brace '{'
-            # Strip leading/trailing whitespace for robust matching
             block_header_line_content = original_content[
-                block_header_start_index : last_open_brace_index
-                + 1  # Include the brace for regex
+                block_header_start_index : last_open_brace_index + 1
             ].strip()
 
-            # Match the extracted header line against the generator pattern
             if GENERATOR_BLOCK_START_PATTERN.match(block_header_line_content):
                 if verbose:
                     print(
                         f"  - Found version '{old_version}' @ pos {match_start_index} inside a generator block. Replacing with '{new_version}'."
                     )
                 modification_made = True
-                matches_replaced_in_generator += 1  # Count successful replacement
+                matches_replaced_in_generator += 1
                 return f"{match.group(1)}{new_version}{match.group(3)}"
-            # The block is not a generator block
+
             if verbose:
                 print(
                     f"  - Found version '{old_version}' @ pos {match_start_index}, but not in a 'generator' block (header line segment: '{block_header_line_content}'). Skipping."
                 )
             return match.group(0)
-
-        # --- End of Replacement Function ---
 
         modified_content = VERSION_PATTERN.sub(
             replace_if_in_generator_block, original_content
@@ -130,22 +112,19 @@ def update_version_in_file(*, file_path: Path, new_version: str, verbose: bool) 
         if modification_made:
             if verbose:
                 print(f"  Updating file '{file_path}'...")
-            # Use Path object's write_text method
             file_path.write_text(modified_content, encoding="utf-8")
             if verbose:
                 print(f"  Successfully updated: {file_path}")
-            return True  # Indicate modification happened
+            return True
 
-        # If no modification was made, but we did find patterns, report differently based on verbose
         if matches_found_count > 0:
             if verbose:
                 if matches_replaced_in_generator == 0:
                     print(
                         f"  Found {matches_found_count} 'version \"...\"' pattern(s), but none required updates in generator blocks or they already matched."
                     )
-                # If matches_replaced_in_generator > 0, the 'Updating file' message already printed.
-            return False  # No modification *written* to disk
-        else:  # No version patterns found at all
+            return False
+        else:
             if verbose:
                 print(f"  No 'version \"...\"' pattern found at all in {file_path}.")
             return False
@@ -194,39 +173,49 @@ def update_baml_generator_versions():
 
     args = parser.parse_args()
 
-    # Determine the new version, running subprocess only if not provided
     if args.target_version is None:
-        installed_version = subprocess.run(  # noqa: S603
-            ["uv", "pip", "list"],  # noqa: S607
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        baml_py_version = next(
-            (
-                line.split()[1]
-                for line in installed_version.stdout.splitlines()
-                if "baml-py" in line
-            ),
-            None,
-        )
-        if baml_py_version is None:
+        try:
+            # Use a more descriptive variable name for the subprocess result
+            installed_version_process = subprocess.run(  # noqa: S603
+                ["uv", "pip", "list"],  # noqa: S607
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            baml_py_version = next(
+                (
+                    line.split()[1]
+                    for line in installed_version_process.stdout.splitlines()
+                    if "baml-py" in line
+                ),
+                None,
+            )
+            if baml_py_version is None:
+                print(
+                    "Error: baml-py version not found in 'uv pip list' output.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            new_version = baml_py_version
+        except FileNotFoundError:
             print(
-                "Error: baml-py version not found in pip list output.",
+                "Error: 'uv' command not found. Is it installed and in your PATH?",
                 file=sys.stderr,
             )
             sys.exit(1)
-        new_version = baml_py_version
+        except subprocess.CalledProcessError as e:
+            print(f"Error running 'uv pip list': {e}", file=sys.stderr)
+            if e.stderr:
+                print(f"Stderr: {e.stderr.strip()}", file=sys.stderr)
+            sys.exit(1)
     else:
         new_version = str(args.target_version)
+
     new_version = new_version.replace('"', "").replace("'", "").strip()
 
-    # Convert string path argument to a Path object
     root_folder = Path(args.search_root_path)
-    # Convert verbose string to boolean
     verbose = args.verbose.lower() == "true"
 
-    # Use Path object's is_dir() method
     if not root_folder.is_dir():
         print(
             f"Error: Folder not found or is not a directory: {root_folder}",
@@ -239,45 +228,73 @@ def update_baml_generator_versions():
         print(f"Target version: {new_version}")
         print("-" * 30)
 
-    found_baml_src = False
+    # --- MODIFIED FILE DISCOVERY LOGIC ---
+    found_any_baml_src_dir = False
     updated_files_count = 0
-    processed_baml_src_dirs = set()  # Keep track of printed directories
+    processed_at_least_one_baml_file = (
+        False  # Tracks if any .baml file was encountered and processed
+    )
 
-    # Use pathlib's rglob to find all items recursively, then filter
-    for item in root_folder.rglob(
-        "*.baml"
-    ):  # More efficient: only glob for .baml files
-        # Check if the parent directory is named 'baml_src'
-        if item.is_file() and item.parent.name == "baml_src":
-            current_baml_src_dir = item.parent
-            if not found_baml_src:
-                found_baml_src = True  # Mark that we found at least one
+    # Iterate over all directories named 'baml_src' recursively under root_folder
+    for baml_src_dir_path in root_folder.rglob("baml_src"):
+        if not baml_src_dir_path.is_dir():
+            # rglob("baml_src") can match files as well as directories. Skip non-directories.
+            if verbose:
+                print(
+                    f"  Skipping non-directory path named 'baml_src': {baml_src_dir_path}"
+                )
+            continue
 
-            # Only print the baml_src directory message once per directory if verbose
-            if verbose and current_baml_src_dir not in processed_baml_src_dirs:
-                print(f"\n--- Found baml_src directory: {current_baml_src_dir} ---")
-                processed_baml_src_dirs.add(current_baml_src_dir)
+        # At this point, baml_src_dir_path is a directory named 'baml_src'
+        if not found_any_baml_src_dir:
+            found_any_baml_src_dir = True
 
-            # Pass the Path object and verbose flag directly to the update function
-            if update_version_in_file(
-                file_path=item, new_version=new_version, verbose=verbose
-            ):
-                updated_files_count += 1
+        if verbose:
+            # This message will print for each 'baml_src' directory found
+            print(f"\n--- Scanning baml_src directory: {baml_src_dir_path} ---")
 
-    if verbose:
-        print("-" * 30)  # Print separator only if verbose mode printed details before
+        baml_files_found_in_this_baml_src = 0
+        # Now, find all .baml files recursively within this baml_src_dir_path
+        for baml_file_path in baml_src_dir_path.rglob("*.baml"):
+            # rglob for *.baml should yield files, but an explicit check is safe practice.
+            if baml_file_path.is_file():
+                baml_files_found_in_this_baml_src += 1
+                if not processed_at_least_one_baml_file:
+                    processed_at_least_one_baml_file = True
 
-    # Final summary - always printed
-    if not found_baml_src:
+                # update_version_in_file handles its own "Processing: {file_path}" if verbose
+                if update_version_in_file(
+                    file_path=baml_file_path, new_version=new_version, verbose=verbose
+                ):
+                    updated_files_count += 1
+
+        if verbose and baml_files_found_in_this_baml_src == 0:
+            print(f"  No .baml files found within {baml_src_dir_path}")
+
+    # Separator before final summary, only if verbose and we actually did baml_src dir processing
+    if (
+        verbose and found_any_baml_src_dir
+    ):  # Check if any baml_src dir processing occurred
+        print("-" * 30)
+
+    # Refined final summary messages
+    if not found_any_baml_src_dir:
+        print("Warning: No directories named 'baml_src' were found.")
+    elif (
+        not processed_at_least_one_baml_file
+    ):  # baml_src dir(s) found, but no .baml files in any of them
         print(
-            "Warning: No directories named 'baml_src' were found containing .baml files."
+            "Info: Found 'baml_src' director(y/ies), but they contained no .baml files."
         )
-    elif updated_files_count == 0:
+    elif (
+        updated_files_count == 0
+    ):  # .baml files were processed, but none were actually changed
         print(
-            "Finished: Found 'baml_src' directories, but no files required updates (or versions already matched)."
+            "Finished: Processed .baml files in 'baml_src' director(y/ies), but no files required updates (e.g., versions already matched)."
         )
-    else:
+    else:  # At least one file was updated
         print(f"Finished: Successfully updated {updated_files_count} file(s).")
+    # --- END OF MODIFIED FILE DISCOVERY LOGIC ---
 
 
 if __name__ == "__main__":
