@@ -1,3 +1,4 @@
+from baml_agents.jupyter._export_notebook_to_py import export_notebook_to_py
 from baml_agents.jupyter._jupyter_baml import (
     JupyterBamlCollector,
     JupyterBamlMonitor,
