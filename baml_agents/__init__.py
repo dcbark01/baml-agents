@@ -1,4 +1,3 @@
-from baml_agents import jupyter
 from baml_agents._agent_tools._action import Action
 from baml_agents._agent_tools._mcp import ActionRunner
 from baml_agents._agent_tools._str_result import Result
@@ -74,7 +73,6 @@ __all__ = [
     "get_prompt",
     "get_root_path",
     "init_logging",
-    "jupyter",
     "with_baml_client",
     "with_hooks",
     "with_model",
