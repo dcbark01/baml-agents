@@ -11,4 +11,5 @@ __all__ = [
     "JupyterBamlMonitor",
     "JupyterChatWidget",
     "JupyterOutputBox",
+    "export_notebook_to_py",
 ]
