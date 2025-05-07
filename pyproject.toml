@@ -8,7 +8,7 @@ readme = "README.md"
 ### DEPENDENCIES
 ##############################
 
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 
 dependencies = [
     "baml-py==0.86.1",
@@ -197,8 +197,8 @@ exclude = [
     "venv",
 ]
 
-# Python 3.12 is the minimum supported version.
-target-version = "py312"
+# Python 3.11 is the minimum supported version.
+target-version = "py311"
 
 [tool.ruff.lint.per-file-ignores]
 "*/devtools/**/*.py" = [
