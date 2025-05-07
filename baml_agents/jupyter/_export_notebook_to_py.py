@@ -1,4 +1,4 @@
-def export_notebook_to_py(target_folder: str):
+def export_notebook_to_py(target_folder: str = "notebook_py_exports") -> None:
     """
     Exports marked cells from the current Jupyter Notebook to .py files
     within the specified target_folder.
