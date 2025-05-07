@@ -1,7 +1,7 @@
 generator target {
     output_type "python/pydantic"
     output_dir ".."
-    version "0.86.1"
+    version "0.87.0"
     default_client_mode sync
 }
 client<llm> Claude37Sonnet {
