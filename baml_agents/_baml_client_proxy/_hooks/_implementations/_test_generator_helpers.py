@@ -56,7 +56,7 @@ def _format_baml_value(value: Any, indent_level: int) -> str:
 
     # Primitives: Return representation without adding indentation here.
     if isinstance(value, str):
-        return f'#"{value}"#'
+        return f'#"{value}"#' if value else '""'
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, (int, float)):
@@ -65,7 +65,7 @@ def _format_baml_value(value: Any, indent_level: int) -> str:
         return "null"
     # Fallback for unsupported types
     repr_str = repr(value)
-    return f'#"{repr_str}"#'
+    return f'#"{repr_str}"#' if repr_str else '""'
 
 
 def get_args_block_str(params):
