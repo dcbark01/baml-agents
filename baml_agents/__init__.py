@@ -41,6 +41,8 @@ from baml_agents._baml_clients._with_baml_client import with_baml_client
 from baml_agents._baml_clients._with_model import BamlModelConfig, with_model
 from baml_agents._project_utils._get_root_path import get_root_path
 from baml_agents._project_utils._init_logging import init_logging
+from baml_agents._utils._must import must
+from baml_agents._utils._sole import sole
 
 __version__ = "0.33.1"
 __all__ = [
@@ -73,6 +75,8 @@ __all__ = [
     "get_prompt",
     "get_root_path",
     "init_logging",
+    "must",
+    "sole",
     "with_baml_client",
     "with_hooks",
     "with_model",
