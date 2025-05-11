@@ -31,6 +31,7 @@ dev = [
     "pytest-cov>=6.1.1",
     "pytest-watch>=4.2.0",
     "python-dotenv>=1.1.0",
+    "regex>=2024.11.6",
     "ruff>=0.11.6",
     "stackprinter>=0.2.12",
 ]
@@ -42,6 +43,7 @@ dev = [
 [project.scripts]
 update-baml = "baml_agents.devtools:update_baml_generator_versions"
 generate-commit-message = "baml_agents.devtools:generate_commit_message"
+inline-baml-tests = "baml_agents.devtools:inline_baml_tests"
 
 ##############################
 ### BUMP VERSION
