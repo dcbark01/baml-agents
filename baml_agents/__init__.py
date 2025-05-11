@@ -44,7 +44,7 @@ from baml_agents._project_utils._init_logging import init_logging
 from baml_agents._utils._must import must
 from baml_agents._utils._sole import sole
 
-__version__ = "0.38.1"
+__version__ = "0.38.2"
 __all__ = [
     "Action",
     "ActionRunner",
