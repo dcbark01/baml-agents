@@ -64,12 +64,10 @@ The script is typically run using `uvx`:
 
 ```bash
 # Basic usage - search current directory, output to .inlined/inlined_tests.baml
-uvx inline-baml-tests --from baml-agents --with regex
+uvx --from baml-agents --with regex inline-baml-tests
 
 # Example: Search in 'my_baml_project/baml_src', output to 'dist/tests_bundle', add 'CI_' prefix
-uvx inline-baml-tests \
-    --from baml-agents \
-    --with regex \
+uvx --from baml-agents --with regex inline-baml-tests \
     --search-root-path ./my_baml_project/baml_src \
     --output-folder ./dist/tests_bundle \
     --test-name-prefix "CI_" \
