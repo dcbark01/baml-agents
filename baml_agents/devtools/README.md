@@ -47,6 +47,12 @@ uvx --from baml-agents update-baml --target-version 0.85.0 --search-root-path . 
 
 ### 2. `inline-baml-tests` (Inline BAML Test File Arguments)
 
+> [!TIP]
+> TL;DR how it works
+> 1. the script finds all tests with `my_arg { file "path/to/file.txt" }`.  Let's say your test is called `test my_test`.
+> 2. it creates a **new** file with a **new** test called `test my_test_inlined` it contains `my_arg "this_is_file_contents"`
+> 3. You need to run `test my_test_inlined`, the `test my_test` will not work (it contains the path)
+
 **Description:**
 
 Facilitates cleaner and more maintainable BAML test cases by allowing large string arguments or shared values to be stored in external files. The script processes `.baml` files, looking for test arguments defined with the `file` keyword (e.g., `my_arg { file "data/prompt.txt" }`). It reads the content from the referenced external file and "inlines" it directly as a BAML string literal into a new version of the test case. These modified test cases are typically renamed (e.g., by adding an `_inlined` suffix) and collected into a separate output BAML file (by default, `inlined_tests.baml` inside an `.inlined/` directory).
@@ -61,6 +67,13 @@ The resulting inlined tests can be useful for creating self-contained test suite
 **Usage:**
 
 The script is typically run using `uvx`:
+
+> [!TIP]
+> Let's explain how uvx works (conceptually, rather than accurately)
+> `uvx --from my_package --with another_package my_program`
+> 1. It creates a virtual python environment where it can safely `pip install` new packages without messing with anything else
+> 2. It does `pip install my_package` and `pip install another_package` into that environment
+> 3. It runs `my_program.py` python program from `my_package`
 
 ```bash
 # Basic usage - search current directory, output to .inlined/inlined_tests.baml
