@@ -1,9 +1,9 @@
+import warnings
 from typing import Any
 
 from pydantic import BaseModel
 
 
-# The core recursive formatting function
 def _format_baml_value(value: Any, indent_level: int) -> str:
     """
     Recursively formats a Python value into BAML syntax string.
@@ -56,7 +56,6 @@ def _format_baml_value(value: Any, indent_level: int) -> str:
 
     # Primitives: Return representation without adding indentation here.
     if isinstance(value, str):
-        # escaped_value = value.replace("\\", "\\\\").replace('"', '\\"')
         return f'#"{value}"#'
     if isinstance(value, bool):
         return "true" if value else "false"
@@ -65,9 +64,11 @@ def _format_baml_value(value: Any, indent_level: int) -> str:
     if value is None:
         return "null"
     # Fallback for unsupported types
-    print(f"Warning: Unsupported type {type(value)} for BAML generation. Using repr().")
+    warnings.warn(
+        f"Unsupported type {type(value)} for BAML generation. Using repr().",
+        UserWarning,
+    )
     repr_str = repr(value)
-    # escaped_repr = repr_str.replace("\\", "\\\\").replace('"', '\\"')
     return f'#"{repr_str}"#'
 
 
