@@ -50,7 +50,7 @@ from baml_agents._tracing._get_args_block_str import get_args_block_str
 from baml_agents._utils._must import must
 from baml_agents._utils._sole import sole
 
-__version__ = "0.38.3"
+__version__ = "0.39.0"
 __all__ = [
     "Action",
     "ActionRunner",
