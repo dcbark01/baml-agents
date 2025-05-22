@@ -21,20 +21,20 @@ test {test_name} {{
 }}\n\n"""
 
 
-def default_test_name_fn(baml_function_name, params):
+def default_generate_test_name(baml_function_name, params):
     hash_input = f"{baml_function_name}{params}"
     return f"t_{hashlib.md5(hash_input.encode()).hexdigest()[:6]}"  # noqa: S324
 
 
 class BamlTestGeneratorHook(OnBeforeCallHookSync):
     def __init__(
-        self, test_name_fn: Callable[[str, dict[str, Any]], str] | None = None
+        self, *, generate_test_name: Callable[[str, dict[str, Any]], str] | None = None
     ):
-        self.test_name_fn = test_name_fn or default_test_name_fn
+        self.generate_test_name = generate_test_name or default_generate_test_name
         self.baml_tests: list[str] = []
 
     def on_before_call(self, params: dict[str, Any], ctx: OnBeforeCallHookContext):
-        test_name = self.test_name_fn(ctx.baml_function_name, params)
+        test_name = self.generate_test_name(ctx.baml_function_name, params)
         baml_test = generate_baml_test(test_name, ctx.baml_function_name, params)
         self.baml_tests.append(baml_test)
 
