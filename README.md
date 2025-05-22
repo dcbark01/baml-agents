@@ -107,6 +107,55 @@ task = r.execute_task(llm, "State the current date along with avg temp between L
 
 To try it yourself, check out the notebook [Simple Agent Demonstration (notebooks/05_simple_agent_demo.ipynb)](notebooks/05_simple_agent_demo.ipynb).
 
+## But how does it work in detail?
+
+#### Part 1
+- It all starts with the Typebuilder: https://docs.boundaryml.com/ref/baml_client/type-builder
+- we create a baml function output type
+```
+class NextAction {
+    @@dynamic
+}
+```
+- We'll use the typebuilder to make it during runtime into a
+```
+class NextAction {
+    chosen_action MyTool1 | MyTool2 | MyTool3
+}
+```
+- this happens right here with the add_property
+
+pseudocode:
+```
+NextAction.add_property("chosen_action", MyTool1 | MyTool2 | MyTool3)
+```
+![image](https://github.com/user-attachments/assets/3077f67f-5e57-4e59-bbc3-69a66c310863)
+
+#### Part 2
+- "ActionRunner" is basically a container which registers the tools
+```
+r = ActionRunner(TypeBuilder)
+r.add_action(MyTool1)
+r.add_action(MyTool2)
+r.add_action(MyTool3)
+```
+or just 
+```
+r.add_from_mcp_server(calculator_mcp)
+```
+to bulk-add all tools from some mcp server 
+- Then, r.tb just creates the typebuilder from Part1.
+according to baml docs, passing the typebuilder makes the baml modify the output classes according to the passed typebuilder
+in our case it adds the one field as described in part1
+```
+tb = r.tb(T.BamlCustomTools_NextAction)
+action = b.BamlCustomTools_GetNextAction(
+    question, baml_options={"tb": tb}
+)
+```
+- returned variable action just contains the tool name and all arguments, for example `MyTool1` and `{"name": "John"}`
+- therefore tool_output = r.run(action) is just a convenience method which just does `tool_output = MyTool1(name="John")`
+
 ## Running the Notebooks
 
 To run code from the `notebooks/` folder, you'll first need to:
