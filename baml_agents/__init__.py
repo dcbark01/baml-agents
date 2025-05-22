@@ -17,6 +17,9 @@ from baml_agents._baml_client_proxy._hooks._base_hook import (
 from baml_agents._baml_client_proxy._hooks._implementations._test_generator import (
     BamlTestGeneratorHook,
 )
+from baml_agents._baml_client_proxy._hooks._implementations._test_generator_helpers import (
+    get_args_block_str,
+)
 from baml_agents._baml_client_proxy._hooks._implementations._with_options import (
     WithOptions,
 )
@@ -46,7 +49,6 @@ from baml_agents._baml_clients._with_baml_client import with_baml_client
 from baml_agents._baml_clients._with_model import BamlModelConfig, with_model
 from baml_agents._project_utils._get_root_path import get_root_path
 from baml_agents._project_utils._init_logging import init_logging
-from baml_agents._tracing._get_args_block_str import get_args_block_str
 from baml_agents._utils._must import must
 from baml_agents._utils._sole import sole
 
