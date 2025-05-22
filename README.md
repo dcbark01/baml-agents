@@ -3,7 +3,7 @@
 [![Status: Experimental](https://img.shields.io/badge/status-experimental-gold.svg?style=flat)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
 [![Maintained: yes](https://img.shields.io/badge/yes-43cd0f.svg?style=flat&label=maintained)](https://github.com/Elijas/baml-agents/issues)
 [![License: MIT](https://img.shields.io/badge/License-MIT-43cd0f.svg?style=flat&label=license)](LICENSE)
-[![PyPI Version](https://img.shields.io/badge/v0.42.0-version?color=43cd0f&style=flat&label=pypi)](https://pypi.org/project/baml-agents)
+[![PyPI Version](https://img.shields.io/badge/v0.43.0-version?color=43cd0f&style=flat&label=pypi)](https://pypi.org/project/baml-agents)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/baml-agents?color=43cd0f&style=flat&label=downloads)](https://pypistats.org/packages/baml-agents)
 [![Linter: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
@@ -12,7 +12,7 @@
 This repository shares useful patterns I use when working with BAML. Note: The API may unexpectedly change with future minor versions; therefore, install with specific version constraints:
 
 ```bash
-pip install "baml-agents>=0.42.0,<0.43.0"
+pip install "baml-agents>=0.43.0,<0.44.0"
 ```
 
 Found this useful? Star the repo on GitHub to show support and follow for updates. Also, find me on Discord if you have questions or would like to join a discussion!
