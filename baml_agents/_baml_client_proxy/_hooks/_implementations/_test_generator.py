@@ -28,9 +28,12 @@ def default_generate_test_name(baml_function_name, params):
 
 class BamlTestGeneratorHook(OnBeforeCallHookSync):
     def __init__(
-        self, *, generate_test_name: Callable[[str, dict[str, Any]], str] | None = None
+        self, *, test_name: str | Callable[[str, dict[str, Any]], str] | None = None
     ):
-        self.generate_test_name = generate_test_name or default_generate_test_name
+        if isinstance(test_name, str):
+            self.generate_test_name = lambda _, __: test_name
+        else:
+            self.generate_test_name = test_name or default_generate_test_name
         self.baml_tests: list[str] = []
 
     def on_before_call(self, params: dict[str, Any], ctx: OnBeforeCallHookContext):
