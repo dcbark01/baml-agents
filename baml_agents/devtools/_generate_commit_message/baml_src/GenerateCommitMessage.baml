@@ -4,12 +4,38 @@ generator target {
     version "0.90.1"
     default_client_mode sync
 }
+client<llm> Default {
+  provider fallback
+  options {
+    strategy [
+      Claude37Sonnet
+      GPT4oDefault
+      GPT4oCustom
+    ]
+  }
+}
 client<llm> Claude37Sonnet {
   provider anthropic
   options {
     model claude-3-7-sonnet-latest
+    api_key env.ANTHROPIC_API_KEY
   }
 }
+client<llm> GPT4oDefault {
+  provider openai
+  options {
+    model gpt-4o
+  }
+}
+client<llm> GPT4oCustom {
+  provider openai
+  options {
+    model gpt-4o-mini
+    api_key env.OPENAI_API_KEY
+    base_url env.OPENAI_API_BASE
+  }
+}
+
 class CommitMessage {
     explanation_feat_vs_no_feat string @description(#"also add explanation short paragraph why you choose feat vs nonfeat for this particular commit."#)
     explanation_comparison string @description(#"also add explanation why its not the three closest category options instead of the one you chose (if you didn't choose build: explain that too)"#)
@@ -17,7 +43,7 @@ class CommitMessage {
     conventional_commit_message string @description(#"only oneliners, no multilines"#)
 }
 function GenerateCommitMessage(git_diff: string, high_level_context: string?) -> CommitMessage {
-    client Claude37Sonnet
+    client Default
     prompt #"
         help me write conventional commits, just output a good commit message.
 
