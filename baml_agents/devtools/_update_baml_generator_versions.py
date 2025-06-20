@@ -176,7 +176,7 @@ def update_baml_generator_versions():
     if args.target_version is None:
         try:
             # Use a more descriptive variable name for the subprocess result
-            installed_version_process = subprocess.run(  # noqa: S603
+            installed_version_process = subprocess.run(
                 ["uv", "pip", "list"],  # noqa: S607
                 capture_output=True,
                 text=True,

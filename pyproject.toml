@@ -114,6 +114,9 @@ exclude_also = [
 
 [tool.ruff]
 lint.ignore = [
+    # --- Imports ---
+    "PLC0415", # `import` should be at the top-level of a file
+
     # --- Complexity & Control Flow ---
     "C901",    # Function is too complex
     "PLR0911", # Too many return statements

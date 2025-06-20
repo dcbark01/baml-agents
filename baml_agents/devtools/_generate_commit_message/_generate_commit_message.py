@@ -22,7 +22,7 @@ def _input_multiline_message(
 
 
 def _get_git_diff():
-    result = subprocess.run(  # noqa: S603
+    result = subprocess.run(
         ["git", "diff", "--staged", "--ignore-all-space"],  # noqa: S607
         capture_output=True,
         text=True,
@@ -38,7 +38,7 @@ def _get_git_diff():
 
 
 def _generate_baml_client(working_dir: Path):
-    subprocess.run(  # noqa: S603
+    subprocess.run(
         ["uvx", "--from", "baml-py", "baml-cli", "generate"],  # noqa: S607
         cwd=working_dir,
         check=True,
