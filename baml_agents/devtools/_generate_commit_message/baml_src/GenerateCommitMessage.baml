@@ -1,7 +1,7 @@
 generator target {
     output_type "python/pydantic"
     output_dir ".."
-    version "0.90.1"
+    version "0.90.2"
     default_client_mode sync
 }
 client<llm> Default {
@@ -30,7 +30,7 @@ client<llm> GPT4oDefault {
 client<llm> GPT4oCustom {
   provider openai
   options {
-    model gpt-4o-mini
+    model gpt-4o
     api_key env.OPENAI_API_KEY
     base_url env.OPENAI_API_BASE
   }
