@@ -19,6 +19,7 @@ from baml_agents._agent_tools._baml_client_passthrough_wrapper import Passthroug
 from baml_agents._agent_tools._mcp_schema_to_type_builder._facade import (
     add_available_actions,
 )
+from baml_agents._agent_tools._mcptools_utils import find_mcptools_binary
 from baml_agents._agent_tools._str_result import Result
 from baml_agents._agent_tools._tool_definition import McpToolDefinition
 from baml_agents._agent_tools._utils._snake_to_pascal import pascal_to_snake
@@ -100,7 +101,9 @@ class ActionRunner(Generic[T, B]):
             self._teleport_baml_class or baml_function_return_type_name
         )
 
-        tb = self.tb(baml_function_return_type_name, tb=tb, include=self._teleport_include)  # type: ignore
+        tb = self.tb(
+            baml_function_return_type_name, tb=tb, include=self._teleport_include
+        )  # type: ignore
 
         self._teleport_baml_class = None
         self._teleport_tb = None
@@ -231,16 +234,17 @@ def list_tools(
     server: str, *, cache: bool = False, env: dict | None = None
 ) -> list[McpToolDefinition]:
     cache_key = _make_cache_key("list_tools", server)
+    mcpt_binpath = find_mcptools_binary()
     if cache:
         with _shelve_lock, shelve.open(get_cache_path()) as cache_db:  # noqa: S301
             if cache_key in cache_db:
                 mcp_schema = cache_db[cache_key]
             else:
-                command = f"mcpt tools {server} --format json"
+                command = f"{mcpt_binpath} tools {server} --format json"
                 mcp_schema = _run_cli_command(command, env=env)
                 cache_db[cache_key] = mcp_schema
     else:
-        command = f"mcpt tools {server} --format json"
+        command = f"{mcpt_binpath} tools {server} --format json"
         mcp_schema = _run_cli_command(command, env=env)
     return McpToolDefinition.from_mcp_schema(mcp_schema)
 
@@ -255,18 +259,21 @@ def call_tool(
 ) -> object:
     params_json = json.dumps(params, sort_keys=True)
     cache_key = _make_cache_key("call_tool", tool, params_json, server)
+    mcpt_binpath = find_mcptools_binary()
     if cache:
         with _shelve_lock, shelve.open(get_cache_path()) as cache_db:  # noqa: S301
             if cache_key in cache_db:
                 output = cache_db[cache_key]
             else:
                 params_suffix = f" -p '{params_json}'" if params_json else ""
-                command = f"mcpt call {tool}{params_suffix} {server} --format json"
+                command = (
+                    f"{mcpt_binpath} call {tool}{params_suffix} {server} --format json"
+                )
                 output = _run_cli_command(command, env=env)
                 cache_db[cache_key] = output
     else:
         params_suffix = f" -p '{params_json}'" if params_json else ""
-        command = f"mcpt call {tool}{params_suffix} {server} --format json"
+        command = f"{mcpt_binpath} call {tool}{params_suffix} {server} --format json"
         output = _run_cli_command(command, env=env)
     return json.loads(output)
 
@@ -288,4 +295,3 @@ def _run_cli_command(command: str | Sequence[str], *, env: dict | None = None) -
     if result.returncode != 0:
         raise RuntimeError(f"Command failed with exit code {result.returncode}")
     return result.stdout.strip()
-
