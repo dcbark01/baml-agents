@@ -101,31 +101,3 @@ def _verify_mcptools_binary(binary_path: str) -> bool:
         pass
 
     return False
-
-
-def get_mcptools_command(subcommand: str, *args, **kwargs) -> list[str]:
-    """
-    Build a command list for running mcptools with the detected binary.
-
-    Args:
-        subcommand: The mcptools subcommand (e.g., 'tools', 'resources')
-        *args: Additional positional arguments
-        **kwargs: Additional keyword arguments (converted to --key value format)
-
-    Returns:
-        list[str]: Command list ready for subprocess execution
-
-    Example:
-        >>> cmd = get_mcptools_command('tools', 'server_name', format='json')
-        >>> # Returns: ['/path/to/mcptools', 'tools', 'server_name', '--format', 'json']
-
-    """
-    binary_path = find_mcptools_binary()
-    command = [binary_path, subcommand] + list(args)
-
-    # Add keyword arguments as flags
-    for key, value in kwargs.items():
-        new_key = key.replace("_", "-")  # Convert underscores to hyphens
-        command.extend([f"--{new_key}", str(value)])
-
-    return command

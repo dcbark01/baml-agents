@@ -11,7 +11,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 dependencies = [
-    "baml-py>=0.86.1",
+    "baml-py>=0.205.0",
     "frozendict>=2.4.6",
     "loguru>=0.7.3",
     "pydantic>=2.11.3",
