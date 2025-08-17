@@ -22,6 +22,7 @@ from baml_agents._agent_tools._mcp_schema_to_type_builder._facade import (
 from baml_agents._agent_tools._str_result import Result
 from baml_agents._agent_tools._tool_definition import McpToolDefinition
 from baml_agents._agent_tools._utils._snake_to_pascal import pascal_to_snake
+from baml_agents._agent_tools._mcptools_utils import get_mcptools_command
 
 # Use a lock to avoid concurrent shelve access issues
 _shelve_lock = threading.Lock()
@@ -236,13 +237,39 @@ def list_tools(
             if cache_key in cache_db:
                 mcp_schema = cache_db[cache_key]
             else:
-                command = f"mcpt tools {server} --format json"
+                command = get_mcptools_command("tools", server, format="json")
                 mcp_schema = _run_cli_command(command, env=env)
                 cache_db[cache_key] = mcp_schema
     else:
-        command = f"mcpt tools {server} --format json"
+        command = get_mcptools_command("tools", server, format="json")
         mcp_schema = _run_cli_command(command, env=env)
     return McpToolDefinition.from_mcp_schema(mcp_schema)
+
+
+# def call_tool(
+#     tool: str,
+#     params: dict[str, object],
+#     server: str,
+#     *,
+#     cache: bool = False,
+#     env: dict | None = None,
+# ) -> object:
+#     params_json = json.dumps(params, sort_keys=True)
+#     cache_key = _make_cache_key("call_tool", tool, params_json, server)
+#     if cache:
+#         with _shelve_lock, shelve.open(get_cache_path()) as cache_db:  # noqa: S301
+#             if cache_key in cache_db:
+#                 output = cache_db[cache_key]
+#             else:
+#                 params_suffix = f" -p '{params_json}'" if params_json else ""
+#                 command = f"mcpt call {tool}{params_suffix} {server} --format json"
+#                 output = _run_cli_command(command, env=env)
+#                 cache_db[cache_key] = output
+#     else:
+#         params_suffix = f" -p '{params_json}'" if params_json else ""
+#         command = f"mcpt call {tool}{params_suffix} {server} --format json"
+#         output = _run_cli_command(command, env=env)
+#     return json.loads(output)
 
 
 def call_tool(
@@ -253,21 +280,34 @@ def call_tool(
     cache: bool = False,
     env: dict | None = None,
 ) -> object:
+    """
+    Updated call_tool function that uses the mcptools detection.
+    """
+    import json
+    
     params_json = json.dumps(params, sort_keys=True)
     cache_key = _make_cache_key("call_tool", tool, params_json, server)
+    
     if cache:
         with _shelve_lock, shelve.open(get_cache_path()) as cache_db:  # noqa: S301
             if cache_key in cache_db:
                 output = cache_db[cache_key]
             else:
-                params_suffix = f" -p '{params_json}'" if params_json else ""
-                command = f"mcpt call {tool}{params_suffix} {server} --format json"
+                # Build command using the detection function
+                if params:
+                    command = get_mcptools_command('call', tool, server, p=params_json, format='json')
+                else:
+                    command = get_mcptools_command('call', tool, server, format='json')
                 output = _run_cli_command(command, env=env)
                 cache_db[cache_key] = output
     else:
-        params_suffix = f" -p '{params_json}'" if params_json else ""
-        command = f"mcpt call {tool}{params_suffix} {server} --format json"
+        # Build command using the detection function
+        if params:
+            command = get_mcptools_command('call', tool, server, p=params_json, format='json')
+        else:
+            command = get_mcptools_command('call', tool, server, format='json')
         output = _run_cli_command(command, env=env)
+    
     return json.loads(output)
 
 
@@ -288,4 +328,3 @@ def _run_cli_command(command: str | Sequence[str], *, env: dict | None = None) -
     if result.returncode != 0:
         raise RuntimeError(f"Command failed with exit code {result.returncode}")
     return result.stdout.strip()
-
